@@ -853,6 +853,26 @@
   dependencies:
     "@tybys/wasm-util" "^0.10.3"
 
+"@netlify/angular-runtime@^4.0.0":
+  version "4.0.0"
+  resolved "https://registry.npmjs.org/@netlify/angular-runtime/-/angular-runtime-4.0.0.tgz"
+  integrity sha512-VrFrzw0MbLWLCG853dJM5gHDg2uRMBWuedEb1DfLDNyja/dQnmQTMPE2ke9QTbebFA01T0aynM0aeU7DyinPOQ==
+  dependencies:
+    "@netlify/edge-functions" "^3.0.8"
+    semver "^7.8.0"
+
+"@netlify/edge-functions@^3.0.8":
+  version "3.0.8"
+  resolved "https://registry.npmjs.org/@netlify/edge-functions/-/edge-functions-3.0.8.tgz"
+  integrity sha512-ml1oCDsRTTRmZS2nUj8XRD1b6+foEiZT3lPk7qQ4nv/jnxylHJ20ooPzPDH+cJmGjXFrMeR14/91W1o6D2ftBg==
+  dependencies:
+    "@netlify/types" "2.8.0"
+
+"@netlify/types@2.8.0":
+  version "2.8.0"
+  resolved "https://registry.npmjs.org/@netlify/types/-/types-2.8.0.tgz"
+  integrity sha512-8/g0Pt6y6wXj5Ia5eeYLiXhRfWeqZXGXpGFeCiiQdUOem+FPtXdA4+YdGxqzWc7D0AvptKSO01KGeeVWHSu8Kg==
+
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"
   resolved "https://registry.npmjs.org/@nodelib/fs.scandir/-/fs.scandir-2.1.5.tgz"
@@ -3376,7 +3396,7 @@ semver@^6.3.1:
   resolved "https://registry.npmjs.org/semver/-/semver-6.3.1.tgz"
   integrity sha512-BR7VvDCVHO+q2xBEWskxS6DJE1qRnb7DxzUrogb71CWoSficBxYsiAGd+Kl0mmq/MprG9yArRkyrQxTO6XjMzA==
 
-semver@^7.0.0, semver@^7.1.1, semver@^7.3.5, semver@^7.5.3, semver@^7.5.4:
+semver@^7.0.0, semver@^7.1.1, semver@^7.3.5, semver@^7.5.3, semver@^7.5.4, semver@^7.8.0:
   version "7.8.5"
   resolved "https://registry.npmjs.org/semver/-/semver-7.8.5.tgz"
   integrity sha512-Y7/KDsb8LjooZpwaqGyulO6DQlksgCncchHGk+sZIY4SBvUocMBEFH5Ur1fI4dV+Jvl0w6cjvucaIi40puRioA==
