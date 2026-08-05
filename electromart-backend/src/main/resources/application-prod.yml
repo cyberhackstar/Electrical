@@ -2,27 +2,57 @@ server:
   port: 8082
   servlet:
     context-path: /api
+  # Embedded Tomcat Thread Optimization
+  tomcat:
+    threads:
+      max: 200 # Max concurrent worker threads
+      min-spare: 20 # Always keep worker threads warm
+    max-connections: 8192
+    accept-count: 100 # Request queue when maxThreads is saturated
+  # Compression reduces bandwidth usage between backend and client
+  compression:
+    enabled: true
+    mime-types: text/html,text/xml,text/plain,text/css,text/javascript,application/javascript,application/json
+    min-response-size: 1024 # 1KB
 
 spring:
   application:
     name: electromart-backend
 
+  # Database & Connection Pool (HikariCP) Performance Tuning
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://host.docker.internal:5432/electromart_db}
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://shared-postgres:5432/electromart_db}
     username: ${SPRING_DATASOURCE_USERNAME:root}
     password: ${SPRING_DATASOURCE_PASSWORD}
     driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 15 # Matches typical cloud vCPU allocation
+      minimum-idle: 5 # Keeps DB connections active to prevent cold calls
+      idle-timeout: 300000 # 5 mins idle threshold
+      max-lifetime: 1800000 # 30 mins lifetime (prevents stale DB sockets)
+      connection-timeout: 3000 # Fail fast after 3 seconds instead of hanging 30 seconds
+      keepalive-time: 60000 # Keeps TCP socket alive across Docker networks
+      leak-detection-threshold: 2000 # Detects unclosed transactions in logs
 
+  # JPA & Hibernate Production Tuning
   jpa:
     hibernate:
-      ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:update}
+      ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:validate} # Use 'validate' in production
     show-sql: false
+    open-in-view: false # Crucial: Releases DB connections immediately after transaction completion
     properties:
       hibernate:
         format_sql: false
         dialect: org.hibernate.dialect.PostgreSQLDialect
-    open-in-view: false
+        # Performance optimizations for batch fetching and query handling
+        jdbc:
+          batch_size: 25
+          order_inserts: true
+          order_updates: true
+        query:
+          in_clause_parameter_padding: true
 
+  # Email Configuration
   mail:
     host: smtp.gmail.com
     port: 587
@@ -34,17 +64,22 @@ spring:
           auth: true
           starttls:
             enable: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
 
+  # File Upload Limits
   servlet:
     multipart:
       max-file-size: 10MB
       max-request-size: 10MB
 
+# Custom Application Settings
 app:
   admin:
     seed-email: ${ADMIN_EMAIL}
     seed-password: ${ADMIN_PASSWORD}
-    seed-name: ${ADMIN_NAME:Admin User}
+    seed-name: ${ADMIN_NAME:ElectroMart Admin}
 
   jwt:
     secret: ${JWT_SECRET}
@@ -58,23 +93,33 @@ app:
   cors:
     allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:4200}
 
+# Cloud Integration
 cloudinary:
   cloud-name: ${CLOUDINARY_CLOUD_NAME}
   api-key: ${CLOUDINARY_API_KEY}
   api-secret: ${CLOUDINARY_API_SECRET}
 
+# Payment Gateway Configuration
 razorpay:
   key-id: ${RAZORPAY_KEY_ID}
   key-secret: ${RAZORPAY_KEY_SECRET}
   webhook-secret: ${RAZORPAY_WEBHOOK_SECRET}
 
+# Production Logging Configuration
 logging:
   level:
+    root: INFO
     com.electromart: INFO
+    org.springframework.web: WARN
     org.springframework.security: WARN
+    org.hibernate.SQL: OFF
 
+# Actuator Security & Endpoint Exposure
 management:
   endpoints:
     web:
       exposure:
         include: health,info
+  endpoint:
+    health:
+      show-details: never # Prevents revealing internal DB credentials or stack details
