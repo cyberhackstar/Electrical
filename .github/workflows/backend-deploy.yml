@@ -4,6 +4,11 @@ on:
   push:
     branches: ["main"]
 
+# Grant explicit permissions to publish packages to GHCR
+permissions:
+  contents: read
+  packages: write
+
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
