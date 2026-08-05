@@ -66,24 +66,14 @@
 // export const reqHandler = createNodeRequestHandler(app);
 
 import { AngularAppEngine, createRequestHandler } from '@angular/ssr';
+import { getContext } from '@netlify/angular-runtime/app-engine';
 
-import {
-  getAllowedHosts,
-  getContext,
-  getTrustProxyHeaders,
-} from '@netlify/angular-runtime/app-engine.js';
+const angularAppEngine = new AngularAppEngine();
 
-const angularApp = new AngularAppEngine({
-  allowedHosts: getAllowedHosts(),
-  trustProxyHeaders: getTrustProxyHeaders(),
-});
-
-async function netlifyAppEngineHandler(request: Request): Promise<Response> {
-  const context = getContext();
-
-  const response = await angularApp.handle(request, context);
-
-  return response ?? new Response('Not Found', { status: 404 });
+export async function netlifyAppEngineHandler(request: Request): Promise<Response> {
+  const ctx = getContext();
+  const result = await angularAppEngine.handle(request, ctx);
+  return result || new Response('Not found', { status: 404 });
 }
 
 export const reqHandler = createRequestHandler(netlifyAppEngineHandler);
