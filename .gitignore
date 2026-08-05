@@ -1,2 +1,2 @@
 .env
-application.yaml
+**/src/main/resources/application.yaml
