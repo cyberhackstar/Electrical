@@ -1,7 +1,10 @@
 import { RenderMode, ServerRoute } from '@angular/ssr';
 
 export const serverRoutes: ServerRoute[] = [
-  // 1. Static Public Pages: Prerender at build time for Instant Loading & 100 SEO Score
+  // =========================
+  // PRERENDER (Static Pages)
+  // =========================
+
   {
     path: '',
     renderMode: RenderMode.Prerender,
@@ -10,8 +13,35 @@ export const serverRoutes: ServerRoute[] = [
     path: 'about',
     renderMode: RenderMode.Prerender,
   },
+  {
+    path: 'contact',
+    renderMode: RenderMode.Prerender,
+  },
+  {
+    path: 'faq',
+    renderMode: RenderMode.Prerender,
+  },
+  {
+    path: 'privacy-policy',
+    renderMode: RenderMode.Prerender,
+  },
+  {
+    path: 'terms',
+    renderMode: RenderMode.Prerender,
+  },
+  {
+    path: 'shipping-policy',
+    renderMode: RenderMode.Prerender,
+  },
 
-  // 2. Dynamic Content (Products/Categories): SSR for Search Crawlers
+  // =========================
+  // SSR (SEO Pages)
+  // =========================
+
+  {
+    path: 'products',
+    renderMode: RenderMode.Server,
+  },
   {
     path: 'category/:slug',
     renderMode: RenderMode.Server,
@@ -21,9 +51,28 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Server,
   },
 
-  // 3. User Dashboard / Admin Routes: Skip SSR & execute purely on Client side
+  // =========================
+  // CLIENT ONLY
+  // =========================
+
   {
-    path: 'admin/**',
+    path: 'auth/**',
+    renderMode: RenderMode.Client,
+  },
+  {
+    path: 'cart',
+    renderMode: RenderMode.Client,
+  },
+  {
+    path: 'checkout',
+    renderMode: RenderMode.Client,
+  },
+  {
+    path: 'order-confirmation/:id',
+    renderMode: RenderMode.Client,
+  },
+  {
+    path: 'wishlist',
     renderMode: RenderMode.Client,
   },
   {
@@ -31,13 +80,16 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Client,
   },
   {
-    path: 'cart',
+    path: 'admin/**',
     renderMode: RenderMode.Client,
   },
 
-  // Fallback for remaining routes
+  // =========================
+  // FALLBACK
+  // =========================
+
   {
     path: '**',
-    renderMode: RenderMode.Server,
+    renderMode: RenderMode.Client,
   },
 ];
