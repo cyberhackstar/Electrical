@@ -177,6 +177,13 @@
     ora "9.3.0"
     rxjs "7.8.2"
 
+"@angular/animations@^21.2.19", "@angular/animations@21.2.19":
+  version "21.2.19"
+  resolved "https://registry.npmjs.org/@angular/animations/-/animations-21.2.19.tgz"
+  integrity sha512-qC0mviselvpKq2ID9bT+USnCsHKfwZAifkUr5A4h/WCzXvUvpVNWp/RPhGcKeOR+seg3EO5GtIZyblwiRlhzrA==
+  dependencies:
+    tslib "^2.3.0"
+
 "@angular/build@^21.2.19":
   version "21.2.19"
   resolved "https://registry.npmjs.org/@angular/build/-/build-21.2.19.tgz"
