@@ -9,7 +9,6 @@ import com.electromart.repository.UserRepository;
 import com.electromart.security.CustomUserDetails;
 import com.electromart.security.JwtService;
 import lombok.RequiredArgsConstructor;
-import main.java.com.electromart.dto.RefreshTokenRequest;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
