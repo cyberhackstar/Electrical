@@ -115,9 +115,13 @@ export class CheckoutComponent implements OnInit {
   }
 
   saveNewAddress(): void {
+    // Strip leading zero or country code if user typed '07742261033' -> '7742261033'
+    let rawPhone = this.addressForm.controls.phone.value.trim().replace(/^0/, '');
+    this.addressForm.controls.phone.setValue(rawPhone);
+
     if (this.addressForm.invalid) {
       this.addressForm.markAllAsTouched();
-      this.toast.error('Please fill in all required address fields correctly.');
+      this.toast.error('Please fix the highlighted errors in the form.');
       return;
     }
 
