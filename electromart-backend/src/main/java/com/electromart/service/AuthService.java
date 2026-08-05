@@ -9,6 +9,8 @@ import com.electromart.repository.UserRepository;
 import com.electromart.security.CustomUserDetails;
 import com.electromart.security.JwtService;
 import lombok.RequiredArgsConstructor;
+import main.java.com.electromart.dto.RefreshTokenRequest;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -65,8 +67,7 @@ public class AuthService {
 
     public AuthResponse login(LoginRequest request) {
         authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
-        );
+                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
 
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new ApiException("User not found", HttpStatus.NOT_FOUND));
@@ -94,6 +95,29 @@ public class AuthService {
 
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
         userRepository.save(user);
+    }
+
+    public AuthResponse refreshToken(RefreshTokenRequest request) {
+        String refreshToken = request.getRefreshToken();
+
+        String email;
+        try {
+            email = jwtService.extractEmail(refreshToken);
+        } catch (Exception e) {
+            throw new ApiException("Invalid refresh token", HttpStatus.UNAUTHORIZED);
+        }
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ApiException("User not found", HttpStatus.NOT_FOUND));
+
+        CustomUserDetails userDetails = new CustomUserDetails(user);
+
+        if (!jwtService.isTokenValid(refreshToken, userDetails)) {
+            throw new ApiException("Refresh token expired or invalid", HttpStatus.UNAUTHORIZED);
+        }
+
+        // Re-use your existing helper method to build the fresh response!
+        return buildAuthResponse(user);
     }
 
     private AuthResponse buildAuthResponse(User user) {

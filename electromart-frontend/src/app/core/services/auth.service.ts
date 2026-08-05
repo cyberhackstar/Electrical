@@ -44,13 +44,21 @@ export class AuthService {
   }
 
   verifySignupOtp(request: OtpVerifyRequest): Observable<ApiResponse<AuthResponse>> {
-    return this.http.post<ApiResponse<AuthResponse>>(`${this.baseUrl}/verify-signup-otp`, request)
-      .pipe(tap(res => this.setSession(res.data)));
+    return this.http
+      .post<ApiResponse<AuthResponse>>(`${this.baseUrl}/verify-signup-otp`, request)
+      .pipe(tap((res) => this.setSession(res.data)));
   }
 
   login(request: LoginRequest): Observable<ApiResponse<AuthResponse>> {
-    return this.http.post<ApiResponse<AuthResponse>>(`${this.baseUrl}/login`, request)
-      .pipe(tap(res => this.setSession(res.data)));
+    return this.http
+      .post<ApiResponse<AuthResponse>>(`${this.baseUrl}/login`, request)
+      .pipe(tap((res) => this.setSession(res.data)));
+  }
+
+  refreshToken(refreshToken: string): Observable<ApiResponse<AuthResponse>> {
+    return this.http
+      .post<ApiResponse<AuthResponse>>(`${this.baseUrl}/refresh-token`, { refreshToken })
+      .pipe(tap((res) => this.setSession(res.data)));
   }
 
   forgotPassword(request: ForgotPasswordRequest): Observable<ApiResponse<null>> {

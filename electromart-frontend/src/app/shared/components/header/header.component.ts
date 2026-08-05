@@ -31,16 +31,22 @@ export class HeaderComponent {
   onSearch(): void {
     const q = this.searchQuery.trim();
     if (q) {
+      this.closeMobileMenu();
       this.router.navigate(['/products'], { queryParams: { keyword: q } });
     }
   }
 
   logout(): void {
     this.authService.logout();
+    this.closeMobileMenu();
     this.router.navigate(['/']);
   }
 
   toggleMobileMenu(): void {
-    this.mobileMenuOpen.update(v => !v);
+    this.mobileMenuOpen.update((v) => !v);
+  }
+
+  closeMobileMenu(): void {
+    this.mobileMenuOpen.set(false);
   }
 }

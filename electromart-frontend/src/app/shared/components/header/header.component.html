@@ -14,10 +14,12 @@
   <div class="site-container flex items-center gap-4 sm:gap-8 py-4">
     <a routerLink="/" class="flex items-center gap-2 shrink-0" aria-label="ElectroMart home">
       <span class="w-2.5 h-2.5 rounded-full bg-amber animate-pulse-glow"></span>
-      <span class="font-display font-bold text-xl sm:text-2xl text-ink tracking-tight">Electro<span class="text-copper">Mart</span></span>
+      <span class="font-display font-bold text-xl sm:text-2xl text-ink tracking-tight">
+        Electro<span class="text-copper">Mart</span>
+      </span>
     </a>
 
-    <!-- Search -->
+    <!-- Desktop Search -->
     <div class="hidden md:flex flex-1 max-w-2xl">
       <div class="relative w-full">
         <input
@@ -34,75 +36,178 @@
           class="absolute right-1.5 top-1/2 -translate-y-1/2 bg-ink text-porcelain rounded-full w-8 h-8 flex items-center justify-center hover:bg-ink-light transition-colors"
           aria-label="Search"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 10.5a6.5 6.5 0 11-13 0 6.5 6.5 0 0113 0z" />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="w-4 h-4"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M21 21l-4.35-4.35M17 10.5a6.5 6.5 0 11-13 0 6.5 6.5 0 0113 0z"
+            />
           </svg>
         </button>
       </div>
     </div>
 
-    <!-- Icons -->
+    <!-- Icons Section -->
     <div class="flex items-center gap-4 sm:gap-6 ml-auto">
-      <a routerLink="/wishlist" class="hidden sm:flex flex-col items-center text-ink hover:text-copper transition-colors" aria-label="Wishlist">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+      <!-- Wishlist Icon (Always visible next to Cart) -->
+      <a
+        routerLink="/wishlist"
+        class="flex flex-col items-center text-ink hover:text-copper transition-colors"
+        aria-label="Wishlist"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="w-5 h-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="1.8"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+          />
         </svg>
         <span class="text-[10px] mt-0.5">Wishlist</span>
       </a>
 
-      <a routerLink="/cart" class="relative flex flex-col items-center text-ink hover:text-copper transition-colors" aria-label="Cart">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 1.94-4.693 2.457-7.152.083-.394-.217-.762-.62-.762H5.106M14.25 18.75a.75.75 0 100 1.5.75.75 0 000-1.5zM19.5 18.75a.75.75 0 100 1.5.75.75 0 000-1.5z" />
+      <!-- Cart Icon -->
+      <a
+        routerLink="/cart"
+        class="relative flex flex-col items-center text-ink hover:text-copper transition-colors"
+        aria-label="Cart"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="w-5 h-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="1.8"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 1.94-4.693 2.457-7.152.083-.394-.217-.762-.62-.762H5.106M14.25 18.75a.75.75 0 100 1.5.75.75 0 000-1.5zM19.5 18.75a.75.75 0 100 1.5.75.75 0 000-1.5z"
+          />
         </svg>
         @if (cartService.itemCount() > 0) {
-          <span class="absolute -top-1.5 -right-2 bg-amber text-ink text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
+          <span
+            class="absolute -top-1.5 -right-2 bg-amber text-ink text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center"
+          >
             {{ cartService.itemCount() }}
           </span>
         }
         <span class="text-[10px] mt-0.5">Cart</span>
       </a>
 
+      <!-- Desktop Auth Dropdown -->
       @if (authService.isLoggedIn()) {
         <div class="hidden sm:flex flex-col items-center group relative">
-          <button type="button" class="flex flex-col items-center text-ink hover:text-copper transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+          <button
+            type="button"
+            class="flex flex-col items-center text-ink hover:text-copper transition-colors"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="w-5 h-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="1.8"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"
+              />
             </svg>
-            <span class="text-[10px] mt-0.5">{{ authService.currentUser()?.fullName?.split(' ')?.[0] }}</span>
+            <span class="text-[10px] mt-0.5">
+              {{ authService.currentUser()?.fullName?.split(' ')?.[0] || 'Account' }}
+            </span>
           </button>
           <div class="absolute top-full right-0 pt-2 hidden group-hover:block">
             <div class="bg-white rounded-lg shadow-card-hover py-2 w-44 text-sm">
-              <a routerLink="/account/orders" class="block px-4 py-2 hover:bg-porcelain">My Orders</a>
-              <a routerLink="/account/addresses" class="block px-4 py-2 hover:bg-porcelain">Addresses</a>
+              <a routerLink="/account/orders" class="block px-4 py-2 hover:bg-porcelain"
+                >My Orders</a
+              >
+              <a routerLink="/account/addresses" class="block px-4 py-2 hover:bg-porcelain"
+                >Addresses</a
+              >
               @if (authService.isAdmin()) {
-                <a routerLink="/admin/dashboard" class="block px-4 py-2 hover:bg-porcelain">Admin Panel</a>
+                <a routerLink="/admin/dashboard" class="block px-4 py-2 hover:bg-porcelain"
+                  >Admin Panel</a
+                >
               }
-              <button type="button" (click)="logout()" class="w-full text-left px-4 py-2 hover:bg-porcelain text-red-600">Logout</button>
+              <button
+                type="button"
+                (click)="logout()"
+                class="w-full text-left px-4 py-2 hover:bg-porcelain text-red-600"
+              >
+                Logout
+              </button>
             </div>
           </div>
         </div>
       } @else {
-        <a routerLink="/auth/login" class="hidden sm:flex flex-col items-center text-ink hover:text-copper transition-colors">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+        <a
+          routerLink="/auth/login"
+          class="hidden sm:flex flex-col items-center text-ink hover:text-copper transition-colors"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="w-5 h-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="1.8"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"
+            />
           </svg>
           <span class="text-[10px] mt-0.5">Login</span>
         </a>
       }
 
+      <!-- Mobile Menu Toggle Button -->
       <button type="button" class="md:hidden" (click)="toggleMobileMenu()" aria-label="Toggle menu">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="w-6 h-6"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="1.8"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
+          />
         </svg>
       </button>
     </div>
   </div>
 
-  <!-- Category nav -->
+  <!-- Category nav (Desktop) -->
   <nav class="hidden md:block border-t border-steel/10">
     <div class="site-container flex items-center gap-6 py-2.5 text-sm font-medium overflow-x-auto">
       @for (cat of categories; track cat.slug) {
-        <a [routerLink]="['/category', cat.slug]" class="text-ink/80 hover:text-copper whitespace-nowrap transition-colors">
+        <a
+          [routerLink]="['/category', cat.slug]"
+          class="text-ink/80 hover:text-copper whitespace-nowrap transition-colors"
+        >
           {{ cat.name }}
         </a>
       }
@@ -112,6 +217,7 @@
   <!-- Mobile menu -->
   @if (mobileMenuOpen()) {
     <div class="md:hidden border-t border-steel/10 bg-white px-4 py-3 space-y-2">
+      <!-- Search Bar -->
       <div class="relative">
         <input
           type="search"
@@ -121,17 +227,62 @@
           class="w-full border border-steel/25 rounded-full pl-4 pr-10 py-2 text-sm outline-none focus:border-copper"
         />
       </div>
+
+      <!-- Categories -->
       @for (cat of categories; track cat.slug) {
-        <a [routerLink]="['/category', cat.slug]" class="block py-1.5 text-sm text-ink/80" (click)="toggleMobileMenu()">
+        <a
+          [routerLink]="['/category', cat.slug]"
+          class="block py-1.5 text-sm text-ink/80"
+          (click)="closeMobileMenu()"
+        >
           {{ cat.name }}
         </a>
       }
-      <div class="border-t border-steel/10 pt-2 mt-2">
+
+      <!-- Synchronized Mobile Account Section -->
+      <div class="border-t border-steel/10 pt-2 mt-2 space-y-1">
         @if (authService.isLoggedIn()) {
-          <a routerLink="/account/orders" class="block py-1.5 text-sm">My Orders</a>
-          <button type="button" (click)="logout()" class="block py-1.5 text-sm text-red-600">Logout</button>
+          <a
+            routerLink="/account/orders"
+            class="block py-1.5 text-sm text-ink/80"
+            (click)="closeMobileMenu()"
+          >
+            My Orders
+          </a>
+
+          <a
+            routerLink="/account/addresses"
+            class="block py-1.5 text-sm text-ink/80"
+            (click)="closeMobileMenu()"
+          >
+            Addresses
+          </a>
+
+          @if (authService.isAdmin()) {
+            <a
+              routerLink="/admin/dashboard"
+              class="block py-1.5 text-sm text-ink/80"
+              (click)="closeMobileMenu()"
+            >
+              Admin Panel
+            </a>
+          }
+
+          <button
+            type="button"
+            (click)="logout()"
+            class="block w-full text-left py-1.5 text-sm font-medium text-red-600"
+          >
+            Logout
+          </button>
         } @else {
-          <a routerLink="/auth/login" class="block py-1.5 text-sm font-semibold text-copper">Login / Sign Up</a>
+          <a
+            routerLink="/auth/login"
+            class="block py-2 text-center text-sm font-semibold text-copper border border-copper rounded-md hover:bg-copper/5 transition-colors"
+            (click)="closeMobileMenu()"
+          >
+            Login / Sign Up
+          </a>
         }
       </div>
     </div>

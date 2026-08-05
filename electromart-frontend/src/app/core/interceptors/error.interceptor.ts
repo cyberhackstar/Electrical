@@ -1,18 +1,14 @@
 import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { catchError, throwError } from 'rxjs';
+import { BehaviorSubject, catchError, filter, switchMap, take, throwError } from 'rxjs';
 import { AuthService } from '../services/auth.service';
 import { ToastService } from '../services/toast.service';
 import { TokenStorageService } from '../services/token-storage.service';
 
-let isNotifiedSessionExpired = false;
+let isRefreshing = false;
+const refreshTokenSubject = new BehaviorSubject<string | null>(null);
 
-/**
- * Centralizes API error handling:
- * - Handles session expiration (401 / 403 when token exists) by clearing state and redirecting once.
- * - Suppresses duplicate permission toasts on initial app load.
- */
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);
   const authService = inject(AuthService);
@@ -21,30 +17,62 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
-      const backendMessage = error.error?.message as string | undefined;
-      const hasToken = !!tokenStorage.getAccessToken();
-
-      // If request failed with 401 OR 403 while sending a token, the session is expired
-      if (error.status === 401 || (error.status === 403 && hasToken)) {
-        authService.logout(); // Clears token storage & sets user signal/subject to null
-
-        if (!isNotifiedSessionExpired) {
-          isNotifiedSessionExpired = true;
-          toast.error('Your session has expired. Please log in again.');
-          setTimeout(() => (isNotifiedSessionExpired = false), 3000);
-        }
-
-        router.navigate(['/auth/login']);
+      // Do not attempt refresh on auth endpoints (login, register, refresh-token)
+      if (req.url.includes('/auth/login') || req.url.includes('/auth/refresh-token')) {
+        return throwError(() => error);
       }
-      // Pure 403 Permission Denied (e.g., a customer trying to access /admin routes)
-      else if (error.status === 403) {
-        toast.error(backendMessage ?? "You don't have permission to do that.");
-      } else if (error.status === 0) {
-        toast.error('Unable to reach the server. Check your connection and try again.');
-      } else if (backendMessage) {
-        toast.error(backendMessage);
-      } else {
-        toast.error('Something went wrong. Please try again.');
+
+      // Handle 401 Unauthorized (Expired Access Token)
+      if (error.status === 401) {
+        const refreshToken = tokenStorage.getRefreshToken();
+
+        if (refreshToken) {
+          if (!isRefreshing) {
+            isRefreshing = true;
+            refreshTokenSubject.next(null);
+
+            return authService.refreshToken(refreshToken).pipe(
+              switchMap((response: any) => {
+                isRefreshing = false;
+                const newAccessToken = response.data.accessToken;
+                const newRefreshToken = response.data.refreshToken;
+
+                // Save tokens using setTokens
+                tokenStorage.setTokens(newAccessToken, newRefreshToken);
+
+                refreshTokenSubject.next(newAccessToken);
+
+                // Re-send original failed request with the fresh token
+                const clonedReq = req.clone({
+                  setHeaders: { Authorization: `Bearer ${newAccessToken}` },
+                });
+                return next(clonedReq);
+              }),
+              catchError((refreshErr) => {
+                isRefreshing = false;
+                authService.logout();
+                toast.error('Session expired. Please log in again.');
+                router.navigate(['/auth/login']);
+                return throwError(() => refreshErr);
+              }),
+            );
+          } else {
+            // Queue concurrent requests until the active token refresh finishes
+            return refreshTokenSubject.pipe(
+              filter((token) => token !== null),
+              take(1),
+              switchMap((newToken) => {
+                const clonedReq = req.clone({
+                  setHeaders: { Authorization: `Bearer ${newToken}` },
+                });
+                return next(clonedReq);
+              }),
+            );
+          }
+        } else {
+          authService.logout();
+          router.navigate(['/auth/login']);
+        }
       }
 
       return throwError(() => error);
