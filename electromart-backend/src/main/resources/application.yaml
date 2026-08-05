@@ -1,0 +1,80 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+
+spring:
+  application:
+    name: electromart-backend
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/electromart_db
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    open-in-view: false
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME:sharma2001bhawesh@gmail.com}
+    password: ${MAIL_PASSWORD:yhrsneexrximgwua}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+app:
+  admin:
+    seed-email: ${ADMIN_EMAIL:admin@electromart.com}
+    seed-password: ${ADMIN_PASSWORD:Admin@123}
+    seed-name: ${ADMIN_NAME:ElectroMart Admin}
+
+  jwt:
+    secret: ${JWT_SECRET:ReplaceThisWithA256BitMinimumRandomSecretKeyForElectroMart}
+    access-token-expiry-ms: 900000 # 15 minutes
+    refresh-token-expiry-ms: 604800000 # 7 days
+
+  otp:
+    expiry-minutes: 5
+    length: 6
+
+  cors:
+    allowed-origins: http://localhost:4200
+
+cloudinary:
+  cloud-name: ${CLOUDINARY_CLOUD_NAME:ddrt7emvo}
+  api-key: ${CLOUDINARY_API_KEY:974525463237797}
+  api-secret: ${CLOUDINARY_API_SECRET:o18AqYDmNdqtsADbV9H5Jnzfwxs}
+
+razorpay:
+  key-id: ${RAZORPAY_KEY_ID:rzp_test_wY3wb7z6dH7O5b}
+  key-secret: ${RAZORPAY_KEY_SECRET:mBXKXFFtltEuNxOwbrYv6fl0}
+  webhook-secret: ${RAZORPAY_WEBHOOK_SECRET:your-razorpay-webhook-secret}
+
+logging:
+  level:
+    com.electromart: DEBUG
+    org.springframework.security: INFO
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
