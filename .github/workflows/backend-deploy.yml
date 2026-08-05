@@ -3,9 +3,6 @@ name: Build & Push Electromart Backend
 on:
   push:
     branches: ["main"]
-    paths:
-      - "electromart-backend/**"
-      - ".github/workflows/backend-deploy.yml"
 
 env:
   REGISTRY: ghcr.io
@@ -33,6 +30,6 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: ./electromart-backend
-          file: ./electromart-backend/Dockerfile
+          file: ./electromart-backend/DOCKERFILE
           push: true
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
