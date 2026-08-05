@@ -1,0 +1,45 @@
+<div class="site-container py-12 max-w-5xl">
+  <p class="font-mono text-xs tracking-[0.25em] text-copper uppercase mb-3">Get In Touch</p>
+  <h1 class="font-display text-3xl sm:text-4xl font-bold text-ink mb-10">We're here to help</h1>
+
+  <div class="grid md:grid-cols-2 gap-10">
+    <div>
+      <div class="space-y-6 mb-8">
+        <div>
+          <h3 class="font-display font-semibold text-ink mb-1">Phone</h3>
+          <a href="tel:+919999999999" class="text-copper hover:text-copper-dark text-sm">+91 99999 99999</a>
+          <p class="text-xs text-steel mt-0.5">Mon–Sat, 9:00 AM – 7:00 PM</p>
+        </div>
+        <div>
+          <h3 class="font-display font-semibold text-ink mb-1">Email</h3>
+          <a href="mailto:support&#64;electromart.com" class="text-copper hover:text-copper-dark text-sm">support&#64;electromart.com</a>
+        </div>
+        <div>
+          <h3 class="font-display font-semibold text-ink mb-1">Bulk & Contractor Orders</h3>
+          <a href="mailto:sales&#64;electromart.com" class="text-copper hover:text-copper-dark text-sm">sales&#64;electromart.com</a>
+          <p class="text-xs text-steel mt-0.5">Tiered pricing for electricians and contractors</p>
+        </div>
+      </div>
+      <div class="card p-5">
+        <h3 class="font-display font-semibold text-ink mb-1 text-sm">Warehouse & Support Office</h3>
+        <p class="text-sm text-steel">Plot 12, Industrial Area Phase 2, Jaipur, Rajasthan 302013, India</p>
+      </div>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" class="card p-6 space-y-4">
+      <div>
+        <label class="label-text" for="name">Name</label>
+        <input id="name" formControlName="name" class="input-field" />
+      </div>
+      <div>
+        <label class="label-text" for="email">Email</label>
+        <input id="email" type="email" formControlName="email" class="input-field" />
+      </div>
+      <div>
+        <label class="label-text" for="message">Message</label>
+        <textarea id="message" formControlName="message" rows="5" class="input-field"></textarea>
+      </div>
+      <button type="submit" class="btn-primary w-full">Send Message</button>
+    </form>
+  </div>
+</div>

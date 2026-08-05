@@ -1,0 +1,104 @@
+<div class="site-container py-10 max-w-3xl">
+  @if (loading()) {
+    <p class="text-steel text-sm">Loading order...</p>
+  } @else if (!order()) {
+    <p class="text-steel">Order not found.</p>
+  } @else {
+    <div class="flex items-center justify-between mb-6">
+      <div>
+        <a routerLink="/account/orders" class="text-xs text-copper hover:text-copper-dark">← Back to Orders</a>
+        <h1 class="font-display text-2xl font-bold text-ink mt-1">{{ order()!.orderNumber }}</h1>
+        <p class="text-xs text-steel mt-1">Placed on {{ order()!.createdAt | date: 'medium' }}</p>
+      </div>
+    </div>
+
+    <!-- Status timeline -->
+    @if (!isCancelledOrReturned) {
+      <div class="card p-6 mb-6">
+        <div class="flex items-center justify-between">
+          @for (step of statusSteps; track step.key; let i = $index) {
+            <div class="flex-1 flex flex-col items-center relative">
+              @if (i > 0) {
+                <div
+                  class="absolute top-3 right-1/2 w-full h-0.5 -z-10"
+                  [class.bg-teal]="i <= currentStepIndex"
+                  [class.bg-steel]="i > currentStepIndex"
+                  [class.bg-opacity-20]="i > currentStepIndex"
+                ></div>
+              }
+              <div
+                class="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold z-10"
+                [class.bg-teal]="i <= currentStepIndex"
+                [class.text-white]="i <= currentStepIndex"
+                [class.bg-steel/15]="i > currentStepIndex"
+                [class.text-steel]="i > currentStepIndex"
+              >
+                @if (i <= currentStepIndex) { ✓ }
+              </div>
+              <span class="text-[10px] text-steel mt-2 text-center">{{ step.label }}</span>
+            </div>
+          }
+        </div>
+      </div>
+    } @else {
+      <div class="card p-4 mb-6 bg-red-50 border-none">
+        <p class="text-sm font-medium text-red-600">This order was {{ order()!.orderStatus.toLowerCase() }}.</p>
+      </div>
+    }
+
+    <!-- Items -->
+    <div class="card p-6 mb-6">
+      <h2 class="font-display font-semibold text-ink mb-4">Items</h2>
+      <div class="space-y-3">
+        @for (item of order()!.items; track item.productId) {
+          <div class="flex justify-between text-sm">
+            <span class="text-ink/80">{{ item.productName }} × {{ item.quantity }}</span>
+            <span class="font-mono">₹{{ item.subtotal | number }}</span>
+          </div>
+        }
+      </div>
+
+      <div class="border-t border-steel/10 mt-4 pt-4 space-y-1.5 text-sm">
+        <div class="flex justify-between text-steel"><span>Items Total</span><span class="font-mono">₹{{ order()!.itemsTotal | number }}</span></div>
+        @if (order()!.discountAmount > 0) {
+          <div class="flex justify-between text-teal"><span>Discount</span><span class="font-mono">− ₹{{ order()!.discountAmount | number }}</span></div>
+        }
+        <div class="flex justify-between text-steel"><span>Shipping</span><span class="font-mono">{{ order()!.shippingCharge === 0 ? 'FREE' : '₹' + order()!.shippingCharge }}</span></div>
+        <div class="flex justify-between text-steel"><span>Tax</span><span class="font-mono">₹{{ order()!.taxAmount | number }}</span></div>
+        <div class="flex justify-between font-semibold text-ink border-t border-steel/10 pt-2 mt-2"><span>Total</span><span class="font-mono">₹{{ order()!.totalAmount | number }}</span></div>
+      </div>
+    </div>
+
+    <!-- Delivery & payment -->
+    <div class="card p-6 mb-6 grid sm:grid-cols-2 gap-6">
+      <div>
+        <h3 class="font-display font-semibold text-sm text-ink mb-2">Delivery Address</h3>
+        <p class="text-sm text-steel">
+          {{ order()!.shippingFullName }}<br />
+          {{ order()!.shippingAddressLine1 }}@if (order()!.shippingAddressLine2) { , {{ order()!.shippingAddressLine2 }} }<br />
+          {{ order()!.shippingCity }}, {{ order()!.shippingState }} - {{ order()!.shippingPincode }}<br />
+          {{ order()!.shippingPhone }}
+        </p>
+      </div>
+      <div>
+        <h3 class="font-display font-semibold text-sm text-ink mb-2">Payment</h3>
+        <p class="text-sm text-steel">
+          Method: {{ order()!.paymentMethod === 'COD' ? 'Cash on Delivery' : 'Online Payment' }}<br />
+          Status: <span class="font-medium text-ink">{{ order()!.paymentStatus }}</span>
+        </p>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="flex flex-wrap gap-3">
+      <button type="button" (click)="downloadInvoice()" [disabled]="downloadingInvoice()" class="btn-outline">
+        {{ downloadingInvoice() ? 'Downloading...' : 'Download Invoice' }}
+      </button>
+      @if (cancellableStatuses.has(order()!.orderStatus)) {
+        <button type="button" (click)="cancelOrder()" [disabled]="cancelling()" class="btn-outline !border-red-300 !text-red-600 hover:!bg-red-50">
+          {{ cancelling() ? 'Cancelling...' : 'Cancel Order' }}
+        </button>
+      }
+    </div>
+  }
+</div>

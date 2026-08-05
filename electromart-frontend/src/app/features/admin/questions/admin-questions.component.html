@@ -1,0 +1,40 @@
+<div class="p-6 sm:p-8">
+  <h1 class="font-display text-2xl font-bold text-ink mb-6">Unanswered Questions</h1>
+
+  @if (loading()) {
+    <p class="text-steel text-sm">Loading questions...</p>
+  } @else if (entries.length === 0) {
+    <p class="text-steel text-sm">No unanswered questions right now — nice work.</p>
+  } @else {
+    <div class="space-y-6">
+      @for (entry of entries; track entry[0]) {
+        <div class="card p-6">
+          <h2 class="font-display font-semibold text-ink mb-4">{{ productName(entry[0]) }}</h2>
+          <div class="space-y-4">
+            @for (q of entry[1]; track q.id) {
+              <div class="border-b border-steel/10 pb-4 last:border-0 last:pb-0">
+                <p class="text-sm font-medium text-ink mb-1">Q: {{ q.questionText }}</p>
+                <p class="text-xs text-steel mb-2">Asked by {{ q.askerName }} · {{ q.createdAt | date: 'mediumDate' }}</p>
+                <div class="flex gap-2">
+                  <input
+                    [(ngModel)]="answerDrafts[q.id]"
+                    placeholder="Type your answer..."
+                    class="input-field !py-1.5 !text-sm"
+                  />
+                  <button
+                    type="button"
+                    (click)="submitAnswer(q)"
+                    [disabled]="submittingId() === q.id || !answerDrafts[q.id]?.trim()"
+                    class="btn-primary !py-1.5 !px-4 !text-sm shrink-0"
+                  >
+                    Answer
+                  </button>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

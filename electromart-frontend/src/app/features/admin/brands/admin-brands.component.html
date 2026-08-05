@@ -1,0 +1,66 @@
+<div class="p-6 sm:p-8">
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="font-display text-2xl font-bold text-ink">Brands</h1>
+    @if (!showForm()) {
+      <button type="button" (click)="openAddForm()" class="btn-primary !py-2 !px-4 !text-sm">+ Add Brand</button>
+    }
+  </div>
+
+  @if (showForm()) {
+    <form [formGroup]="form" (ngSubmit)="save()" class="card p-6 mb-6 space-y-3 max-w-md">
+      <h2 class="font-display font-semibold text-ink mb-2">{{ editingId() ? 'Edit Brand' : 'New Brand' }}</h2>
+      <div>
+        <label class="label-text">Name</label>
+        <input formControlName="name" class="input-field" />
+      </div>
+      <div>
+        <label class="label-text">Logo</label>
+        <input type="file" accept="image/*" (change)="onFileSelected($event)" class="text-sm" />
+      </div>
+      <div class="flex gap-3 pt-2">
+        <button type="submit" class="btn-primary !py-2 !text-sm">Save</button>
+        <button type="button" (click)="showForm.set(false)" class="btn-outline !py-2 !text-sm">Cancel</button>
+      </div>
+    </form>
+  }
+
+  @if (loading()) {
+    <p class="text-steel text-sm">Loading brands...</p>
+  } @else {
+    <div class="card overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead class="bg-porcelain text-left text-xs text-steel uppercase tracking-wide">
+          <tr>
+            <th class="px-4 py-3">Logo</th>
+            <th class="px-4 py-3">Name</th>
+            <th class="px-4 py-3">Status</th>
+            <th class="px-4 py-3"></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (brand of brands(); track brand.id) {
+            <tr class="border-t border-steel/10">
+              <td class="px-4 py-3">
+                @if (brand.logoUrl) {
+                  <img [src]="brand.logoUrl" [alt]="brand.name" class="w-10 h-10 object-contain" />
+                } @else {
+                  <span class="text-steel text-xs">—</span>
+                }
+              </td>
+              <td class="px-4 py-3 font-medium text-ink">{{ brand.name }}</td>
+              <td class="px-4 py-3">
+                <span class="text-[11px] font-semibold px-2 py-0.5 rounded" [class.bg-teal/10]="brand.active" [class.text-teal]="brand.active" [class.bg-steel/10]="!brand.active" [class.text-steel]="!brand.active">
+                  {{ brand.active ? 'Active' : 'Inactive' }}
+                </span>
+              </td>
+              <td class="px-4 py-3 text-right space-x-3">
+                <button type="button" (click)="openEditForm(brand)" class="text-copper hover:text-copper-dark text-xs font-medium">Edit</button>
+                <button type="button" (click)="deleteBrand(brand.id)" class="text-steel hover:text-red-600 text-xs font-medium">Deactivate</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

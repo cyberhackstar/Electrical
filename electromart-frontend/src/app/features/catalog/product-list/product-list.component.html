@@ -1,0 +1,162 @@
+<div class="site-container py-8">
+  <!-- Breadcrumb / heading -->
+  <div class="mb-6">
+    <p class="font-mono text-xs tracking-widest text-copper uppercase mb-1">
+      {{ totalElements() }} product{{ totalElements() === 1 ? '' : 's' }}
+    </p>
+    <h1 class="font-display text-2xl sm:text-3xl font-bold text-ink">
+      {{ currentCategory()?.name ?? (filters.keyword ? 'Search results for "' + filters.keyword + '"' : 'All Products') }}
+    </h1>
+    @if (currentCategory()?.description) {
+      <p class="text-steel text-sm mt-1 max-w-2xl">{{ currentCategory()?.description }}</p>
+    }
+  </div>
+
+  <div class="flex gap-8">
+    <!-- Filters sidebar -->
+    <aside class="hidden lg:block w-64 shrink-0 space-y-6">
+      <div>
+        <h3 class="font-display font-semibold text-sm text-ink mb-3">Brand</h3>
+        <div class="space-y-2 max-h-56 overflow-y-auto pr-2">
+          @for (brand of brands(); track brand.id) {
+            <label class="flex items-center gap-2 text-sm text-ink/80 cursor-pointer">
+              <input
+                type="checkbox"
+                [checked]="selectedBrandIds.has(brand.id)"
+                (change)="toggleBrand(brand.id)"
+                class="rounded border-steel/40 text-copper focus:ring-copper"
+              />
+              {{ brand.name }}
+            </label>
+          }
+        </div>
+      </div>
+
+      <div>
+        <h3 class="font-display font-semibold text-sm text-ink mb-3">Price Range</h3>
+        <div class="flex items-center gap-2">
+          <input #minPrice type="number" placeholder="Min" class="input-field !py-1.5 !px-2 text-sm w-full" />
+          <span class="text-steel">–</span>
+          <input #maxPrice type="number" placeholder="Max" class="input-field !py-1.5 !px-2 text-sm w-full" />
+        </div>
+        <button
+          type="button"
+          (click)="applyPriceFilter(minPrice.value, maxPrice.value)"
+          class="btn-outline w-full !py-1.5 !text-xs mt-2"
+        >
+          Apply
+        </button>
+      </div>
+
+      <div>
+        <label class="flex items-center gap-2 text-sm text-ink/80 cursor-pointer">
+          <input
+            type="checkbox"
+            (change)="toggleInStockOnly($any($event.target).checked)"
+            class="rounded border-steel/40 text-copper focus:ring-copper"
+          />
+          In stock only
+        </label>
+      </div>
+
+      <button type="button" (click)="clearFilters()" class="text-xs text-copper hover:text-copper-dark font-medium">
+        Clear all filters
+      </button>
+    </aside>
+
+    <!-- Product grid -->
+    <div class="flex-1 min-w-0">
+      <!-- Sort bar -->
+      <div class="flex items-center justify-between mb-5">
+        <button type="button" class="lg:hidden btn-outline !py-2 !px-4 !text-sm" (click)="filtersOpen.set(!filtersOpen())">
+          Filters
+        </button>
+        <select
+          (change)="onSortChange($any($event.target).value)"
+          class="input-field !w-auto !py-2 text-sm ml-auto"
+          aria-label="Sort products"
+        >
+          <option value="createdAt:desc">Newest</option>
+          <option value="price:asc">Price: Low to High</option>
+          <option value="price:desc">Price: High to Low</option>
+          <option value="avgRating:desc">Highest Rated</option>
+        </select>
+      </div>
+
+      @if (filtersOpen()) {
+        <div class="lg:hidden card p-4 mb-5 space-y-4">
+          <div>
+            <h3 class="font-display font-semibold text-sm text-ink mb-2">Brand</h3>
+            <div class="flex flex-wrap gap-2">
+              @for (brand of brands(); track brand.id) {
+                <button
+                  type="button"
+                  (click)="toggleBrand(brand.id)"
+                  class="text-xs px-3 py-1.5 rounded-full border transition-colors"
+                  [class.bg-ink]="selectedBrandIds.has(brand.id)"
+                  [class.text-white]="selectedBrandIds.has(brand.id)"
+                  [class.border-ink]="selectedBrandIds.has(brand.id)"
+                  [class.border-steel]="!selectedBrandIds.has(brand.id)"
+                >
+                  {{ brand.name }}
+                </button>
+              }
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <input #minPriceM type="number" placeholder="Min ₹" class="input-field !py-1.5 !px-2 text-sm w-full" />
+            <span class="text-steel">–</span>
+            <input #maxPriceM type="number" placeholder="Max ₹" class="input-field !py-1.5 !px-2 text-sm w-full" />
+            <button type="button" (click)="applyPriceFilter(minPriceM.value, maxPriceM.value)" class="btn-outline !py-1.5 !px-3 !text-xs shrink-0">
+              Go
+            </button>
+          </div>
+          <button type="button" (click)="clearFilters()" class="text-xs text-copper font-medium">Clear all filters</button>
+        </div>
+      }
+
+      @if (loading()) {
+        <div class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-5">
+          @for (i of [1,2,3,4,5,6,7,8]; track i) {
+            <app-product-card-skeleton />
+          }
+        </div>
+      } @else if (products().length === 0) {
+        <div class="text-center py-20">
+          <p class="font-display text-xl font-semibold text-ink mb-2">No products found</p>
+          <p class="text-steel text-sm mb-6">Try adjusting your filters or search for something else.</p>
+          <button type="button" (click)="clearFilters()" class="btn-outline">Clear Filters</button>
+        </div>
+      } @else {
+        <div class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-5">
+          @for (product of products(); track product.id) {
+            <app-product-card [product]="product" />
+          }
+        </div>
+
+        <!-- Pagination -->
+        @if (totalPages() > 1) {
+          <div class="flex items-center justify-center gap-2 mt-10">
+            <button
+              type="button"
+              (click)="goToPage(page() - 1)"
+              [disabled]="page() === 0"
+              class="btn-outline !py-2 !px-4 !text-sm"
+            >
+              Previous
+            </button>
+            <span class="text-sm text-steel px-3">Page {{ page() + 1 }} of {{ totalPages() }}</span>
+            <button
+              type="button"
+              (click)="goToPage(page() + 1)"
+              [disabled]="page() + 1 >= totalPages()"
+              class="btn-outline !py-2 !px-4 !text-sm"
+            >
+              Next
+            </button>
+          </div>
+        }
+      }
+    </div>
+  </div>
+</div>

@@ -1,0 +1,41 @@
+<div class="site-container py-10">
+  <h1 class="font-display text-2xl sm:text-3xl font-bold text-ink mb-8">My Orders</h1>
+
+  @if (loading()) {
+    <p class="text-steel text-sm">Loading your orders...</p>
+  } @else if (orders().length === 0) {
+    <div class="text-center py-20">
+      <p class="font-display text-xl font-semibold text-ink mb-2">No orders yet</p>
+      <p class="text-steel text-sm mb-6">Once you place an order, it'll show up here.</p>
+      <a routerLink="/products" class="btn-primary">Start Shopping</a>
+    </div>
+  } @else {
+    <div class="space-y-4">
+      @for (order of orders(); track order.id) {
+        <a [routerLink]="['/account/orders', order.id]" class="card p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <div class="flex items-center gap-3 mb-1">
+              <span class="font-mono text-sm font-medium text-ink">{{ order.orderNumber }}</span>
+              <span class="text-[11px] font-semibold px-2 py-0.5 rounded" [class]="statusStyles[order.orderStatus]">
+                {{ order.orderStatus }}
+              </span>
+            </div>
+            <p class="text-xs text-steel">{{ order.createdAt | date: 'mediumDate' }} · {{ order.items.length }} item(s)</p>
+          </div>
+          <div class="flex items-center gap-6">
+            <span class="font-mono font-semibold text-ink">₹{{ order.totalAmount | number }}</span>
+            <span class="text-copper text-sm font-medium">View →</span>
+          </div>
+        </a>
+      }
+    </div>
+
+    @if (totalPages() > 1) {
+      <div class="flex items-center justify-center gap-2 mt-8">
+        <button type="button" (click)="goToPage(page() - 1)" [disabled]="page() === 0" class="btn-outline !py-2 !px-4 !text-sm">Previous</button>
+        <span class="text-sm text-steel px-3">Page {{ page() + 1 }} of {{ totalPages() }}</span>
+        <button type="button" (click)="goToPage(page() + 1)" [disabled]="page() + 1 >= totalPages()" class="btn-outline !py-2 !px-4 !text-sm">Next</button>
+      </div>
+    }
+  }
+</div>

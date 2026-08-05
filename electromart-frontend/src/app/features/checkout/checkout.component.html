@@ -1,0 +1,177 @@
+<div class="site-container py-10">
+  <h1 class="font-display text-2xl sm:text-3xl font-bold text-ink mb-8">Checkout</h1>
+
+  <div class="grid lg:grid-cols-3 gap-8">
+    <div class="lg:col-span-2 space-y-6">
+      <!-- Address -->
+      <div class="card p-6">
+        <h2 class="font-display font-semibold text-ink mb-4">Delivery Address</h2>
+
+        @if (loadingAddresses()) {
+          <p class="text-steel text-sm">Loading addresses...</p>
+        } @else {
+          <div class="space-y-3 mb-4">
+            @for (addr of addresses(); track addr.id) {
+              <label
+                class="flex items-start gap-3 border rounded-lg p-4 cursor-pointer transition-colors"
+                [class.border-copper]="selectedAddressId() === addr.id"
+                [class.bg-copper/5]="selectedAddressId() === addr.id"
+                [class.border-steel/20]="selectedAddressId() !== addr.id"
+              >
+                <input
+                  type="radio"
+                  name="address"
+                  class="mt-1"
+                  [checked]="selectedAddressId() === addr.id"
+                  (change)="selectedAddressId.set(addr.id)"
+                />
+                <div class="text-sm">
+                  <p class="font-medium text-ink">{{ addr.fullName }} <span class="text-steel font-normal">· {{ addr.phone }}</span></p>
+                  <p class="text-steel mt-0.5">
+                    {{ addr.addressLine1 }}{{ addr.addressLine2 ? ', ' + addr.addressLine2 : '' }},
+                    {{ addr.city }}, {{ addr.state }} - {{ addr.pincode }}
+                  </p>
+                  @if (addr.isDefault) {
+                    <span class="inline-block text-[10px] font-semibold text-teal bg-teal/10 px-2 py-0.5 rounded mt-1">Default</span>
+                  }
+                </div>
+              </label>
+            }
+          </div>
+
+          @if (!showAddressForm()) {
+            <button type="button" (click)="showAddressForm.set(true)" class="text-sm text-copper font-semibold hover:text-copper-dark">
+              + Add a new address
+            </button>
+          } @else {
+            <form [formGroup]="addressForm" (ngSubmit)="saveNewAddress()" class="border-t border-steel/10 pt-4 mt-2 space-y-3">
+              <div class="grid sm:grid-cols-2 gap-3">
+                <input formControlName="fullName" placeholder="Full Name" class="input-field" />
+                <input formControlName="phone" placeholder="Phone Number" class="input-field" />
+              </div>
+              <input formControlName="addressLine1" placeholder="Address Line 1" class="input-field" />
+              <input formControlName="addressLine2" placeholder="Address Line 2 (optional)" class="input-field" />
+              <div class="grid sm:grid-cols-3 gap-3">
+                <input formControlName="city" placeholder="City" class="input-field" />
+                <input formControlName="state" placeholder="State" class="input-field" />
+                <input formControlName="pincode" placeholder="Pincode" class="input-field" />
+              </div>
+              <label class="flex items-center gap-2 text-sm text-ink/80">
+                <input type="checkbox" formControlName="isDefault" class="rounded border-steel/40 text-copper focus:ring-copper" />
+                Set as default address
+              </label>
+              <div class="flex gap-3">
+                <button type="submit" class="btn-primary !py-2 !text-sm">Save Address</button>
+                @if (addresses().length > 0) {
+                  <button type="button" (click)="showAddressForm.set(false)" class="btn-outline !py-2 !text-sm">Cancel</button>
+                }
+              </div>
+            </form>
+          }
+        }
+      </div>
+
+      <!-- Payment method -->
+      <div class="card p-6">
+        <h2 class="font-display font-semibold text-ink mb-4">Payment Method</h2>
+        <div class="space-y-3">
+          <label
+            class="flex items-center gap-3 border rounded-lg p-4 cursor-pointer transition-colors"
+            [class.border-copper]="paymentMethod() === 'RAZORPAY'"
+            [class.border-steel/20]="paymentMethod() !== 'RAZORPAY'"
+          >
+            <input type="radio" name="payment" [checked]="paymentMethod() === 'RAZORPAY'" (change)="paymentMethod.set('RAZORPAY')" />
+            <div class="text-sm">
+              <p class="font-medium text-ink">Pay Online</p>
+              <p class="text-steel text-xs">UPI, Card, Netbanking, Wallets — secured by Razorpay</p>
+            </div>
+          </label>
+          <label
+            class="flex items-center gap-3 border rounded-lg p-4 cursor-pointer transition-colors"
+            [class.border-copper]="paymentMethod() === 'COD'"
+            [class.border-steel/20]="paymentMethod() !== 'COD'"
+          >
+            <input type="radio" name="payment" [checked]="paymentMethod() === 'COD'" (change)="paymentMethod.set('COD')" />
+            <div class="text-sm">
+              <p class="font-medium text-ink">Cash on Delivery</p>
+              <p class="text-steel text-xs">Pay in cash when your order arrives</p>
+            </div>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Order summary -->
+    <div class="lg:col-span-1">
+      <div class="card p-6 sticky top-24">
+        <h2 class="font-display font-semibold text-ink mb-4">Order Summary</h2>
+
+        @if (cartService.cart()) {
+          <div class="space-y-2 text-sm mb-4 max-h-48 overflow-y-auto pr-1">
+            @for (item of cartService.cart()!.items; track item.id) {
+              <div class="flex justify-between text-ink/80">
+                <span class="line-clamp-1 mr-2">{{ item.productName }} × {{ item.quantity }}</span>
+                <span class="font-mono shrink-0">₹{{ item.subtotal | number }}</span>
+              </div>
+            }
+          </div>
+        }
+
+        <!-- Coupon -->
+        <div class="border-t border-steel/10 pt-4 mb-4">
+          @if (!appliedCoupon()) {
+            <div class="flex gap-2">
+              <input [(ngModel)]="couponCode" [ngModelOptions]="{standalone: true}" placeholder="Coupon code" class="input-field !py-2 !text-sm" />
+              <button type="button" (click)="applyCoupon()" [disabled]="applyingCoupon()" class="btn-outline !py-2 !px-4 !text-sm shrink-0">
+                Apply
+              </button>
+            </div>
+            @if (couponError()) {
+              <p class="error-text">{{ couponError() }}</p>
+            }
+          } @else {
+            <div class="flex items-center justify-between bg-teal/10 text-teal text-sm rounded px-3 py-2">
+              <span class="font-medium">{{ appliedCoupon()!.code }} applied</span>
+              <button type="button" (click)="removeCoupon()" class="text-xs underline">Remove</button>
+            </div>
+          }
+        </div>
+
+        <!-- Totals -->
+        <div class="space-y-2 text-sm border-t border-steel/10 pt-4">
+          <div class="flex justify-between text-steel">
+            <span>Items Total</span>
+            <span class="font-mono">₹{{ itemsTotal | number }}</span>
+          </div>
+          @if (discountAmount > 0) {
+            <div class="flex justify-between text-teal">
+              <span>Discount</span>
+              <span class="font-mono">− ₹{{ discountAmount | number }}</span>
+            </div>
+          }
+          <div class="flex justify-between text-steel">
+            <span>Shipping</span>
+            <span class="font-mono">{{ shippingCharge === 0 ? 'FREE' : '₹' + shippingCharge }}</span>
+          </div>
+          <div class="flex justify-between text-steel">
+            <span>Tax (GST)</span>
+            <span class="font-mono">₹{{ taxAmount | number }}</span>
+          </div>
+          <div class="flex justify-between font-semibold text-ink text-base border-t border-steel/10 pt-2 mt-2">
+            <span>Total</span>
+            <span class="font-mono">₹{{ orderTotal | number }}</span>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          (click)="placeOrder()"
+          [disabled]="placingOrder() || !selectedAddressId()"
+          class="btn-primary w-full mt-5"
+        >
+          {{ placingOrder() ? 'Processing...' : (paymentMethod() === 'COD' ? 'Place Order' : 'Pay ₹' + orderTotal) }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

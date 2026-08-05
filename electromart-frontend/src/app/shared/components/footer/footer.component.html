@@ -1,0 +1,54 @@
+<footer class="bg-ink text-porcelain/80 mt-16">
+  <div class="circuit-divider text-copper"></div>
+
+  <div class="site-container py-12 grid grid-cols-2 md:grid-cols-4 gap-8 text-sm">
+    <div class="col-span-2 md:col-span-1">
+      <div class="flex items-center gap-2 mb-3">
+        <span class="w-2 h-2 rounded-full bg-amber"></span>
+        <span class="font-display font-bold text-lg text-white">Electro<span class="text-copper">Mart</span></span>
+      </div>
+      <p class="text-porcelain/60 leading-relaxed">
+        Genuine electrical products for homes, contractors, and businesses — sourced directly from authorized distributors.
+      </p>
+    </div>
+
+    <div>
+      <h3 class="font-display font-semibold text-white mb-3">Shop</h3>
+      <ul class="space-y-2 text-porcelain/60">
+        <li><a routerLink="/products" class="hover:text-amber transition-colors">All Products</a></li>
+        <li><a routerLink="/category/lighting" class="hover:text-amber transition-colors">Lighting</a></li>
+        <li><a routerLink="/category/wiring-cables" class="hover:text-amber transition-colors">Wiring & Cables</a></li>
+        <li><a routerLink="/category/mcbs-breakers" class="hover:text-amber transition-colors">MCBs & Breakers</a></li>
+      </ul>
+    </div>
+
+    <div>
+      <h3 class="font-display font-semibold text-white mb-3">Support</h3>
+      <ul class="space-y-2 text-porcelain/60">
+        <li><a routerLink="/about" class="hover:text-amber transition-colors">About Us</a></li>
+        <li><a routerLink="/contact" class="hover:text-amber transition-colors">Contact Us</a></li>
+        <li><a routerLink="/shipping-policy" class="hover:text-amber transition-colors">Shipping & Returns</a></li>
+        <li><a routerLink="/faq" class="hover:text-amber transition-colors">FAQs</a></li>
+      </ul>
+    </div>
+
+    <div>
+      <h3 class="font-display font-semibold text-white mb-3">Get in Touch</h3>
+      <ul class="space-y-2 text-porcelain/60">
+        <li><a href="tel:+919999999999" class="hover:text-amber transition-colors">+91 99999 99999</a></li>
+        <li><a href="mailto:support&#64;electromart.com" class="hover:text-amber transition-colors">support&#64;electromart.com</a></li>
+        <li class="pt-1">Mon–Sat, 9:00 AM – 7:00 PM</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="border-t border-white/10">
+    <div class="site-container py-4 flex flex-col sm:flex-row justify-between items-center gap-2 text-xs text-porcelain/50">
+      <span>© {{ year }} ElectroMart. All rights reserved.</span>
+      <div class="flex gap-4">
+        <a routerLink="/privacy-policy" class="hover:text-amber transition-colors">Privacy Policy</a>
+        <a routerLink="/terms" class="hover:text-amber transition-colors">Terms of Service</a>
+      </div>
+    </div>
+  </div>
+</footer>

@@ -1,0 +1,73 @@
+<div class="p-6 sm:p-8">
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="font-display text-2xl font-bold text-ink">Categories</h1>
+    @if (!showForm()) {
+      <button type="button" (click)="openAddForm()" class="btn-primary !py-2 !px-4 !text-sm">+ Add Category</button>
+    }
+  </div>
+
+  @if (showForm()) {
+    <form [formGroup]="form" (ngSubmit)="save()" class="card p-6 mb-6 space-y-3">
+      <h2 class="font-display font-semibold text-ink mb-2">{{ editingId() ? 'Edit Category' : 'New Category' }}</h2>
+      <div>
+        <label class="label-text">Name</label>
+        <input formControlName="name" class="input-field" />
+      </div>
+      <div>
+        <label class="label-text">Description</label>
+        <textarea formControlName="description" rows="2" class="input-field"></textarea>
+      </div>
+      <div>
+        <label class="label-text">Parent Category (optional)</label>
+        <select formControlName="parentId" class="input-field">
+          <option [value]="0">None (top-level category)</option>
+          @for (cat of categories(); track cat.id) {
+            <option [value]="cat.id">{{ cat.name }}</option>
+          }
+        </select>
+      </div>
+      <div>
+        <label class="label-text">Category Image</label>
+        <input type="file" accept="image/*" (change)="onFileSelected($event)" class="text-sm" />
+      </div>
+      <div class="flex gap-3 pt-2">
+        <button type="submit" class="btn-primary !py-2 !text-sm">Save</button>
+        <button type="button" (click)="showForm.set(false)" class="btn-outline !py-2 !text-sm">Cancel</button>
+      </div>
+    </form>
+  }
+
+  @if (loading()) {
+    <p class="text-steel text-sm">Loading categories...</p>
+  } @else {
+    <div class="card overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead class="bg-porcelain text-left text-xs text-steel uppercase tracking-wide">
+          <tr>
+            <th class="px-4 py-3">Name</th>
+            <th class="px-4 py-3">Parent</th>
+            <th class="px-4 py-3">Status</th>
+            <th class="px-4 py-3"></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (cat of categories(); track cat.id) {
+            <tr class="border-t border-steel/10">
+              <td class="px-4 py-3 font-medium text-ink">{{ cat.name }}</td>
+              <td class="px-4 py-3 text-steel">{{ cat.parentName ?? '—' }}</td>
+              <td class="px-4 py-3">
+                <span class="text-[11px] font-semibold px-2 py-0.5 rounded" [class.bg-teal/10]="cat.active" [class.text-teal]="cat.active" [class.bg-steel/10]="!cat.active" [class.text-steel]="!cat.active">
+                  {{ cat.active ? 'Active' : 'Inactive' }}
+                </span>
+              </td>
+              <td class="px-4 py-3 text-right space-x-3">
+                <button type="button" (click)="openEditForm(cat)" class="text-copper hover:text-copper-dark text-xs font-medium">Edit</button>
+                <button type="button" (click)="deleteCategory(cat.id)" class="text-steel hover:text-red-600 text-xs font-medium">Deactivate</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

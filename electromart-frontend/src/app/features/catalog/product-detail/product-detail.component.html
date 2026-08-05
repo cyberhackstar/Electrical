@@ -1,0 +1,210 @@
+@if (loading()) {
+  <div class="site-container py-16 text-center text-steel">Loading product...</div>
+} @else if (!product()) {
+  <div class="site-container py-16 text-center">
+    <p class="font-display text-xl font-semibold text-ink mb-2">Product not found</p>
+    <a routerLink="/products" class="btn-primary mt-4 inline-flex">Browse Products</a>
+  </div>
+} @else {
+  <div class="site-container py-8">
+    <!-- Breadcrumb -->
+    <nav class="text-xs text-steel mb-6 flex items-center gap-1.5 flex-wrap" aria-label="Breadcrumb">
+      <a routerLink="/" class="hover:text-copper">Home</a>
+      <span>/</span>
+      <a [routerLink]="['/category', product()!.categoryName]" class="hover:text-copper">{{ product()!.categoryName }}</a>
+      <span>/</span>
+      <span class="text-ink/70">{{ product()!.name }}</span>
+    </nav>
+
+    <div class="grid lg:grid-cols-2 gap-10 mb-14">
+      <!-- Gallery -->
+      <div>
+        <div class="aspect-square bg-porcelain rounded-lg overflow-hidden mb-3">
+          <img
+            [src]="product()!.images[activeImageIndex()]?.imageUrl ?? primaryImage(product()!)"
+            [alt]="product()!.name"
+            class="w-full h-full object-contain p-6"
+          />
+        </div>
+        @if (product()!.images.length > 1) {
+          <div class="flex gap-2">
+            @for (img of product()!.images; track img.id; let i = $index) {
+              <button
+                type="button"
+                (click)="activeImageIndex.set(i)"
+                class="w-16 h-16 rounded border-2 overflow-hidden shrink-0"
+                [class.border-copper]="activeImageIndex() === i"
+                [class.border-transparent]="activeImageIndex() !== i"
+              >
+                <img [src]="img.imageUrl" [alt]="product()!.name" class="w-full h-full object-contain p-1" />
+              </button>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Info -->
+      <div>
+        @if (product()!.brandName) {
+          <p class="text-xs text-steel uppercase tracking-widest mb-2">{{ product()!.brandName }}</p>
+        }
+        <h1 class="font-display text-2xl sm:text-3xl font-bold text-ink mb-3">{{ product()!.name }}</h1>
+
+        @if (product()!.ratingCount > 0) {
+          <app-star-rating [rating]="product()!.avgRating" [count]="product()!.ratingCount" size="md" class="mb-4 inline-block" />
+        }
+
+        <div class="flex items-baseline gap-3 mb-1">
+          <span class="font-mono font-bold text-3xl text-ink">₹{{ product()!.effectivePrice | number }}</span>
+          @if (discountPercent) {
+            <span class="font-mono text-base text-steel line-through">₹{{ product()!.price | number }}</span>
+            <span class="bg-teal/10 text-teal text-xs font-bold px-2 py-1 rounded">{{ discountPercent }}% OFF</span>
+          }
+        </div>
+        <p class="text-xs text-steel mb-6">Inclusive of all taxes</p>
+
+        <p class="text-sm mb-6" [class.text-teal]="product()!.inStock" [class.text-red-600]="!product()!.inStock">
+          {{ product()!.inStock ? '● In Stock — ready to ship' : '● Out of Stock' }}
+        </p>
+
+        <p class="text-ink/80 text-sm leading-relaxed mb-6">{{ product()!.description }}</p>
+
+        @if (product()!.inStock) {
+          <div class="flex items-center gap-4 mb-6">
+            <span class="label-text !mb-0">Quantity</span>
+            <div class="flex items-center border border-steel/30 rounded">
+              <button type="button" (click)="changeQuantity(-1)" class="w-9 h-9 flex items-center justify-center text-ink hover:bg-porcelain" aria-label="Decrease quantity">−</button>
+              <span class="w-10 text-center font-mono">{{ quantity() }}</span>
+              <button type="button" (click)="changeQuantity(1)" class="w-9 h-9 flex items-center justify-center text-ink hover:bg-porcelain" aria-label="Increase quantity">+</button>
+            </div>
+            <span class="text-xs text-steel">{{ product()!.stockQuantity }} available</span>
+          </div>
+        }
+
+        <div class="flex flex-wrap gap-3 mb-6">
+          <button type="button" (click)="addToCart()" [disabled]="!product()!.inStock || addingToCart()" class="btn-primary flex-1 sm:flex-none sm:min-w-[180px]">
+            {{ addingToCart() ? 'Adding...' : 'Add to Cart' }}
+          </button>
+          <button type="button" (click)="buyNow()" [disabled]="!product()!.inStock" class="btn-secondary flex-1 sm:flex-none sm:min-w-[180px]">
+            Buy Now
+          </button>
+          <button
+            type="button"
+            (click)="toggleWishlist()"
+            class="btn-outline !px-4"
+            [attr.aria-label]="isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" [attr.fill]="isWishlisted ? '#C9752E' : 'none'" viewBox="0 0 24 24" stroke="#C9752E" stroke-width="1.8">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+            </svg>
+          </button>
+        </div>
+
+        <!-- Nameplate spec plate -->
+        @if (nameplateSpecs.length > 0) {
+          <app-nameplate title="PRODUCT RATING PLATE" [subtitle]="product()!.sku" [specs]="nameplateSpecs" />
+        }
+      </div>
+    </div>
+
+    <div class="circuit-divider text-copper mb-12"></div>
+
+    <!-- Reviews -->
+    <section class="max-w-3xl">
+      <h2 class="font-display text-xl font-bold text-ink mb-6">Customer Reviews</h2>
+
+      @if (reviews().length === 0) {
+        <p class="text-steel text-sm mb-8">No reviews yet — be the first to share your experience.</p>
+      } @else {
+        <div class="space-y-5 mb-10">
+          @for (review of reviews(); track review.id) {
+            <div class="border-b border-steel/10 pb-5">
+              <div class="flex items-center gap-3 mb-1">
+                <app-star-rating [rating]="review.rating" [count]="null" />
+                @if (review.verifiedPurchase) {
+                  <span class="text-[10px] font-semibold text-teal bg-teal/10 px-2 py-0.5 rounded">Verified Purchase</span>
+                }
+              </div>
+              <p class="text-sm font-medium text-ink mb-1">{{ review.reviewerName }}</p>
+              @if (review.comment) {
+                <p class="text-sm text-steel">{{ review.comment }}</p>
+              }
+            </div>
+          }
+        </div>
+      }
+
+      <div class="card p-5">
+        <h3 class="font-display font-semibold text-sm text-ink mb-3">Write a Review</h3>
+        <div class="mb-3">
+          <label class="label-text">Your Rating</label>
+          <div class="flex gap-1">
+            @for (star of [1,2,3,4,5]; track star) {
+              <button
+                type="button"
+                (click)="reviewForm.rating = star"
+                class="text-2xl leading-none"
+                [class.text-amber-dark]="star <= reviewForm.rating"
+                [class.text-steel]="star > reviewForm.rating"
+                [attr.aria-label]="star + ' stars'"
+              >★</button>
+            }
+          </div>
+        </div>
+        <div class="mb-3">
+          <label class="label-text" for="review-comment">Your Review (optional)</label>
+          <textarea
+            id="review-comment"
+            [(ngModel)]="reviewForm.comment"
+            rows="3"
+            class="input-field"
+            placeholder="How did this product work for you?"
+          ></textarea>
+        </div>
+        <button type="button" (click)="submitReview()" [disabled]="submittingReview()" class="btn-primary">
+          {{ submittingReview() ? 'Submitting...' : 'Submit Review' }}
+        </button>
+      </div>
+    </section>
+
+    <div class="circuit-divider text-copper max-w-3xl my-12"></div>
+
+    <!-- Q&A -->
+    <section class="max-w-3xl">
+      <h2 class="font-display text-xl font-bold text-ink mb-6">Questions & Answers</h2>
+
+      @if (questions().length === 0) {
+        <p class="text-steel text-sm mb-8">No questions yet — ask us anything about this product.</p>
+      } @else {
+        <div class="space-y-5 mb-8">
+          @for (q of questions(); track q.id) {
+            <div class="border-b border-steel/10 pb-5">
+              <p class="text-sm font-medium text-ink mb-1">Q: {{ q.questionText }}</p>
+              <p class="text-xs text-steel mb-2">Asked by {{ q.askerName }} · {{ q.createdAt | date: 'mediumDate' }}</p>
+              @if (q.answerText) {
+                <p class="text-sm text-ink/80 bg-porcelain rounded px-3 py-2">
+                  <span class="font-medium text-teal">A:</span> {{ q.answerText }}
+                </p>
+              } @else {
+                <p class="text-xs text-steel italic">Awaiting an answer from our team</p>
+              }
+            </div>
+          }
+        </div>
+      }
+
+      <div class="card p-5">
+        <h3 class="font-display font-semibold text-sm text-ink mb-3">Ask a Question</h3>
+        <textarea
+          [(ngModel)]="newQuestionText"
+          rows="2"
+          class="input-field mb-3"
+          placeholder="e.g. Does this work with a 3-phase supply?"
+        ></textarea>
+        <button type="button" (click)="askQuestion()" [disabled]="submittingQuestion() || !newQuestionText.trim()" class="btn-primary">
+          {{ submittingQuestion() ? 'Submitting...' : 'Submit Question' }}
+        </button>
+      </div>
+    </section>
+  </div>
+}

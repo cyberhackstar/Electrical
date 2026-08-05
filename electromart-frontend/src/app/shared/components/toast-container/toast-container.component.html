@@ -1,0 +1,20 @@
+<div class="fixed top-4 right-4 z-[100] flex flex-col gap-2 w-[calc(100%-2rem)] max-w-sm" role="status" aria-live="polite">
+  @for (toast of toastService.toasts(); track toast.id) {
+    <div
+      class="flex items-start gap-3 rounded-lg shadow-card-hover px-4 py-3 text-sm font-medium animate-[fadeIn_0.2s_ease-out]"
+      [class.bg-ink]="toast.type === 'info'"
+      [class.text-porcelain]="toast.type === 'info'"
+      [class.bg-teal]="toast.type === 'success'"
+      [class.text-white]="toast.type === 'success' || toast.type === 'error'"
+      [class.bg-red-600]="toast.type === 'error'"
+    >
+      <span class="flex-1">{{ toast.message }}</span>
+      <button
+        type="button"
+        class="opacity-70 hover:opacity-100"
+        (click)="toastService.dismiss(toast.id)"
+        aria-label="Dismiss notification"
+      >✕</button>
+    </div>
+  }
+</div>

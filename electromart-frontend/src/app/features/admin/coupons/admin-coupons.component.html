@@ -1,0 +1,95 @@
+<div class="p-6 sm:p-8">
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="font-display text-2xl font-bold text-ink">Coupons</h1>
+    @if (!showForm()) {
+      <button type="button" (click)="openAddForm()" class="btn-primary !py-2 !px-4 !text-sm">+ Add Coupon</button>
+    }
+  </div>
+
+  @if (showForm()) {
+    <form [formGroup]="form" (ngSubmit)="save()" class="card p-6 mb-6 space-y-3 max-w-xl">
+      <h2 class="font-display font-semibold text-ink mb-2">{{ editingId() ? 'Edit Coupon' : 'New Coupon' }}</h2>
+      <div class="grid sm:grid-cols-2 gap-3">
+        <div>
+          <label class="label-text">Code</label>
+          <input formControlName="code" class="input-field uppercase" placeholder="SAVE10" />
+        </div>
+        <div>
+          <label class="label-text">Discount Type</label>
+          <select formControlName="discountType" class="input-field">
+            <option value="PERCENTAGE">Percentage</option>
+            <option value="FLAT">Flat Amount</option>
+          </select>
+        </div>
+      </div>
+      <div class="grid sm:grid-cols-2 gap-3">
+        <div>
+          <label class="label-text">Discount Value</label>
+          <input type="number" formControlName="discountValue" class="input-field" />
+        </div>
+        <div>
+          <label class="label-text">Max Discount Cap (₹, for % coupons)</label>
+          <input type="number" formControlName="maxDiscountAmount" class="input-field" />
+        </div>
+      </div>
+      <div class="grid sm:grid-cols-3 gap-3">
+        <div>
+          <label class="label-text">Min Order Value (₹)</label>
+          <input type="number" formControlName="minOrderValue" class="input-field" />
+        </div>
+        <div>
+          <label class="label-text">Usage Limit</label>
+          <input type="number" formControlName="usageLimit" placeholder="0 = unlimited" class="input-field" />
+        </div>
+        <div>
+          <label class="label-text">Expiry Date</label>
+          <input type="date" formControlName="expiryDate" class="input-field" />
+        </div>
+      </div>
+      <div class="flex gap-3 pt-2">
+        <button type="submit" class="btn-primary !py-2 !text-sm">Save Coupon</button>
+        <button type="button" (click)="showForm.set(false)" class="btn-outline !py-2 !text-sm">Cancel</button>
+      </div>
+    </form>
+  }
+
+  @if (loading()) {
+    <p class="text-steel text-sm">Loading coupons...</p>
+  } @else {
+    <div class="card overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead class="bg-porcelain text-left text-xs text-steel uppercase tracking-wide">
+          <tr>
+            <th class="px-4 py-3">Code</th>
+            <th class="px-4 py-3">Discount</th>
+            <th class="px-4 py-3">Usage</th>
+            <th class="px-4 py-3">Expires</th>
+            <th class="px-4 py-3">Status</th>
+            <th class="px-4 py-3"></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (coupon of coupons(); track coupon.id) {
+            <tr class="border-t border-steel/10">
+              <td class="px-4 py-3 font-mono font-medium text-ink">{{ coupon.code }}</td>
+              <td class="px-4 py-3">
+                {{ coupon.discountType === 'PERCENTAGE' ? coupon.discountValue + '%' : '₹' + coupon.discountValue }}
+              </td>
+              <td class="px-4 py-3 text-steel">{{ coupon.usedCount }} / {{ coupon.usageLimit ?? '∞' }}</td>
+              <td class="px-4 py-3 text-steel text-xs">{{ coupon.expiryDate | date: 'mediumDate' }}</td>
+              <td class="px-4 py-3">
+                <span class="text-[11px] font-semibold px-2 py-0.5 rounded" [class.bg-teal/10]="coupon.active" [class.text-teal]="coupon.active" [class.bg-steel/10]="!coupon.active" [class.text-steel]="!coupon.active">
+                  {{ coupon.active ? 'Active' : 'Inactive' }}
+                </span>
+              </td>
+              <td class="px-4 py-3 text-right space-x-3">
+                <button type="button" (click)="openEditForm(coupon)" class="text-copper hover:text-copper-dark text-xs font-medium">Edit</button>
+                <button type="button" (click)="deactivate(coupon.id)" class="text-steel hover:text-red-600 text-xs font-medium">Deactivate</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

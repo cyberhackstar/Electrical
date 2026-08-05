@@ -1,0 +1,109 @@
+<!-- Hero -->
+<section class="bg-ink relative overflow-hidden">
+  <div class="site-container py-14 sm:py-20 grid md:grid-cols-2 gap-10 items-center relative z-10">
+    <div>
+      <p class="font-mono text-xs tracking-[0.25em] text-amber uppercase mb-4">Trusted by 12,000+ homes & contractors</p>
+      <h1 class="font-display text-4xl sm:text-5xl font-bold text-white leading-[1.1] mb-5">
+        Wired right,<br />delivered fast.
+      </h1>
+      <p class="text-porcelain/70 text-base sm:text-lg max-w-md mb-8">
+        Every switch, wire, and breaker sourced from authorized distributors — so what you install is exactly what's rated on the box.
+      </p>
+      <div class="flex flex-wrap gap-4">
+        <a routerLink="/products" class="btn-primary">Shop All Products</a>
+        <a routerLink="/category/mcbs-breakers" class="btn-outline !text-porcelain !border-porcelain/30 hover:!border-amber hover:!text-amber">
+          Browse MCBs & Breakers
+        </a>
+      </div>
+    </div>
+
+    <div class="max-w-sm mx-auto w-full">
+      <app-nameplate title="ELECTROMART · SERVICE RATING" subtitle="TYPE: ONLINE ELECTRICAL SUPPLY" [specs]="heroSpecs" />
+    </div>
+  </div>
+
+  <!-- Faint circuit-trace texture in the background -->
+  <div class="absolute inset-0 opacity-[0.04] pointer-events-none"
+       style="background-image: repeating-linear-gradient(90deg, white 0px, white 1px, transparent 1px, transparent 60px), repeating-linear-gradient(0deg, white 0px, white 1px, transparent 1px, transparent 60px);">
+  </div>
+</section>
+
+<!-- Trust points -->
+<section class="site-container py-12">
+  <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+    @for (point of trustPoints; track point.title) {
+      <div class="card p-5">
+        <h3 class="font-display font-semibold text-ink mb-1.5">{{ point.title }}</h3>
+        <p class="text-sm text-steel">{{ point.detail }}</p>
+      </div>
+    }
+  </div>
+</section>
+
+<div class="circuit-divider text-copper max-w-7xl mx-auto"></div>
+
+<!-- Featured products -->
+<section class="site-container py-14">
+  <div class="flex items-end justify-between mb-8">
+    <div>
+      <p class="font-mono text-xs tracking-[0.25em] text-copper uppercase mb-2">Handpicked</p>
+      <h2 class="font-display text-2xl sm:text-3xl font-bold text-ink">Featured Products</h2>
+    </div>
+    <a routerLink="/products" class="hidden sm:inline text-sm font-semibold text-copper hover:text-copper-dark transition-colors">
+      View all →
+    </a>
+  </div>
+
+  @if (loadingFeatured()) {
+    <div class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-5">
+      @for (i of [1,2,3,4]; track i) {
+        <app-product-card-skeleton />
+      }
+    </div>
+  } @else if (featuredProducts().length > 0) {
+    <div class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-5">
+      @for (product of featuredProducts(); track product.id) {
+        <app-product-card [product]="product" />
+      }
+    </div>
+  } @else {
+    <p class="text-steel text-sm">No featured products yet — check back soon.</p>
+  }
+</section>
+
+<div class="circuit-divider text-copper max-w-7xl mx-auto"></div>
+
+<!-- Category grid -->
+<section class="site-container py-14">
+  <div class="flex items-end justify-between mb-8">
+    <div>
+      <p class="font-mono text-xs tracking-[0.25em] text-copper uppercase mb-2">Shop by category</p>
+      <h2 class="font-display text-2xl sm:text-3xl font-bold text-ink">Find exactly what the job needs</h2>
+    </div>
+    <a routerLink="/products" class="hidden sm:inline text-sm font-semibold text-copper hover:text-copper-dark transition-colors">
+      View all →
+    </a>
+  </div>
+
+  <div class="grid grid-cols-2 md:grid-cols-3 gap-5">
+    @for (cat of categories; track cat.slug) {
+      <a [routerLink]="['/category', cat.slug]" class="card p-6 group">
+        <h3 class="font-display font-semibold text-ink group-hover:text-copper transition-colors mb-1">
+          {{ cat.name }}
+        </h3>
+        <p class="text-xs text-steel">{{ cat.description }}</p>
+      </a>
+    }
+  </div>
+</section>
+
+<!-- Newsletter / bulk CTA -->
+<section class="bg-copper/10 border-y border-copper/20">
+  <div class="site-container py-10 flex flex-col sm:flex-row items-center justify-between gap-6">
+    <div>
+      <h3 class="font-display text-xl font-bold text-ink mb-1">Buying for a site or a shop?</h3>
+      <p class="text-sm text-steel">Get tiered bulk pricing on wiring, switchgear, and fittings.</p>
+    </div>
+    <a routerLink="/contact" class="btn-secondary shrink-0">Talk to Sales</a>
+  </div>
+</section>

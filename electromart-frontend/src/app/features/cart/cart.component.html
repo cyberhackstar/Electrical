@@ -1,0 +1,72 @@
+<div class="site-container py-10">
+  <h1 class="font-display text-2xl sm:text-3xl font-bold text-ink mb-8">Your Cart</h1>
+
+  @if (!authService.isLoggedIn()) {
+    <div class="text-center py-20">
+      <p class="font-display text-xl font-semibold text-ink mb-2">Log in to view your cart</p>
+      <p class="text-steel text-sm mb-6">Your cart is saved to your account so you never lose your selections.</p>
+      <a routerLink="/auth/login" class="btn-primary">Log In</a>
+    </div>
+  } @else if (loading()) {
+    <div class="text-center py-20 text-steel">Loading your cart...</div>
+  } @else if (!cartService.cart() || cartService.cart()!.items.length === 0) {
+    <div class="text-center py-20">
+      <p class="font-display text-xl font-semibold text-ink mb-2">Your cart is empty</p>
+      <p class="text-steel text-sm mb-6">Browse our catalog and find what you need for the job.</p>
+      <a routerLink="/products" class="btn-primary">Start Shopping</a>
+    </div>
+  } @else {
+    <div class="grid lg:grid-cols-3 gap-8">
+      <!-- Items -->
+      <div class="lg:col-span-2 space-y-4">
+        @for (item of cartService.cart()!.items; track item.id) {
+          <div class="card p-4 flex gap-4" [class.opacity-50]="updatingItemId() === item.id">
+            <a [routerLink]="['/product', item.productSlug]" class="w-20 h-20 bg-porcelain rounded shrink-0 overflow-hidden">
+              <img [src]="item.productImage ?? 'https://placehold.co/200x200/F3F5F7/5B6672?text=No+Image'" [alt]="item.productName" class="w-full h-full object-contain p-1.5" />
+            </a>
+
+            <div class="flex-1 min-w-0">
+              <a [routerLink]="['/product', item.productSlug]" class="font-medium text-sm text-ink hover:text-copper transition-colors line-clamp-2">
+                {{ item.productName }}
+              </a>
+              <p class="font-mono text-sm text-ink mt-1">₹{{ item.price | number }}</p>
+
+              @if (!item.inStock) {
+                <p class="text-xs text-red-600 mt-1">Only {{ item.availableStock }} left — reduce quantity</p>
+              }
+
+              <div class="flex items-center justify-between mt-3">
+                <div class="flex items-center border border-steel/30 rounded">
+                  <button type="button" (click)="updateQuantity(item.id, item.quantity - 1)" class="w-8 h-8 flex items-center justify-center hover:bg-porcelain" aria-label="Decrease quantity">−</button>
+                  <span class="w-8 text-center text-sm font-mono">{{ item.quantity }}</span>
+                  <button type="button" (click)="updateQuantity(item.id, item.quantity + 1)" class="w-8 h-8 flex items-center justify-center hover:bg-porcelain" aria-label="Increase quantity">+</button>
+                </div>
+                <button type="button" (click)="removeItem(item.id)" class="text-xs text-steel hover:text-red-600 transition-colors">
+                  Remove
+                </button>
+              </div>
+            </div>
+
+            <div class="text-right shrink-0">
+              <p class="font-mono font-semibold text-ink">₹{{ item.subtotal | number }}</p>
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Summary -->
+      <div class="lg:col-span-1">
+        <div class="card p-6 sticky top-24">
+          <h2 class="font-display font-semibold text-ink mb-4">Order Summary</h2>
+          <div class="flex justify-between text-sm mb-2">
+            <span class="text-steel">Items ({{ cartService.cart()!.totalItems }})</span>
+            <span class="font-mono">₹{{ cartService.cart()!.subtotal | number }}</span>
+          </div>
+          <p class="text-xs text-steel mb-4">Shipping, tax & discounts calculated at checkout.</p>
+          <button type="button" (click)="goToCheckout()" class="btn-primary w-full">Proceed to Checkout</button>
+          <a routerLink="/products" class="block text-center text-xs text-copper mt-3 hover:text-copper-dark">← Continue Shopping</a>
+        </div>
+      </div>
+    </div>
+  }
+</div>

@@ -1,0 +1,45 @@
+<div class="site-container py-12 max-w-4xl">
+  <p class="font-mono text-xs tracking-[0.25em] text-copper uppercase mb-3">Our Story</p>
+  <h1 class="font-display text-3xl sm:text-4xl font-bold text-ink mb-8">Built by people who've wired real buildings</h1>
+
+  <div class="grid md:grid-cols-2 gap-10 items-start mb-14">
+    <div class="space-y-4 text-ink/80 leading-relaxed text-sm">
+      <p>
+        ElectroMart started with a simple frustration: too many online electrical stores sell products with no clear
+        sourcing, vague specs, and warranty cards that go nowhere when something fails.
+      </p>
+      <p>
+        We built ElectroMart to be different. Every product on this site is sourced directly from authorized
+        distributors — the same channels licensed electricians and contractors already trust. What's printed on the
+        rating plate is what you get.
+      </p>
+      <p>
+        Today, we serve individual homeowners doing their own repairs, electricians stocking up for a job, and
+        contractors buying in bulk for entire sites — all from the same catalog, with the same guarantee of
+        authenticity.
+      </p>
+    </div>
+    <app-nameplate title="ELECTROMART · COMPANY RECORD" subtitle="TYPE: ONLINE ELECTRICAL RETAILER" [specs]="specs" />
+  </div>
+
+  <div class="grid sm:grid-cols-3 gap-6 mb-14">
+    <div class="card p-6">
+      <h3 class="font-display font-semibold text-ink mb-2">Genuine Sourcing</h3>
+      <p class="text-sm text-steel">Direct from authorized distributors — no grey-market imports, no unmarked repacks.</p>
+    </div>
+    <div class="card p-6">
+      <h3 class="font-display font-semibold text-ink mb-2">Real Warranty Support</h3>
+      <p class="text-sm text-steel">Every warrantied product is backed by an invoice you can actually use for a claim.</p>
+    </div>
+    <div class="card p-6">
+      <h3 class="font-display font-semibold text-ink mb-2">Built for the Trade</h3>
+      <p class="text-sm text-steel">Bulk pricing and dedicated support for electricians and contractors ordering at scale.</p>
+    </div>
+  </div>
+
+  <div class="text-center bg-copper/5 border border-copper/20 rounded-lg p-8">
+    <h2 class="font-display text-xl font-bold text-ink mb-2">Have questions before you order?</h2>
+    <p class="text-steel text-sm mb-5">Our team can help you pick the right part for the job.</p>
+    <a routerLink="/contact" class="btn-primary">Contact Us</a>
+  </div>
+</div>

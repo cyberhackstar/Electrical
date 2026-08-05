@@ -1,0 +1,35 @@
+<div class="site-container py-10">
+  <h1 class="font-display text-2xl sm:text-3xl font-bold text-ink mb-8">My Wishlist</h1>
+
+  @if (loading()) {
+    <p class="text-steel text-sm">Loading wishlist...</p>
+  } @else if (wishlistService.wishlist().length === 0) {
+    <div class="text-center py-20">
+      <p class="font-display text-xl font-semibold text-ink mb-2">Your wishlist is empty</p>
+      <p class="text-steel text-sm mb-6">Save products you're interested in for later.</p>
+      <a routerLink="/products" class="btn-primary">Browse Products</a>
+    </div>
+  } @else {
+    <div class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-5">
+      @for (item of wishlistService.wishlist(); track item.wishlistItemId) {
+        <div class="card overflow-hidden">
+          <a [routerLink]="['/product', item.productSlug]" class="block aspect-square bg-porcelain">
+            <img [src]="item.productImage ?? 'https://placehold.co/400x400/F3F5F7/5B6672?text=No+Image'" [alt]="item.productName" class="w-full h-full object-contain p-4" />
+          </a>
+          <div class="p-4">
+            <a [routerLink]="['/product', item.productSlug]" class="font-medium text-sm text-ink line-clamp-2 hover:text-copper transition-colors">
+              {{ item.productName }}
+            </a>
+            <p class="font-mono font-bold text-ink mt-2 mb-3">₹{{ item.price | number }}</p>
+            <div class="flex gap-2">
+              <button type="button" (click)="addToCart(item)" [disabled]="!item.inStock" class="btn-primary flex-1 !py-1.5 !text-xs">
+                {{ item.inStock ? 'Add to Cart' : 'Out of Stock' }}
+              </button>
+              <button type="button" (click)="remove(item.productId)" class="btn-outline !py-1.5 !px-2.5 !text-xs" aria-label="Remove from wishlist">✕</button>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

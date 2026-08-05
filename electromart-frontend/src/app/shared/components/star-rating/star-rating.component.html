@@ -1,0 +1,16 @@
+<div class="flex items-center gap-1" [attr.aria-label]="rating + ' out of 5 stars'">
+  <div class="flex" [class.text-sm]="size === 'sm'" [class.text-base]="size === 'md'">
+    @for (star of stars; track star) {
+      <span class="relative inline-block">
+        <span class="text-steel/25">★</span>
+        <span
+          class="absolute inset-0 overflow-hidden text-amber-dark"
+          [style.width.%]="fillPercent(star)"
+        >★</span>
+      </span>
+    }
+  </div>
+  @if (count !== null) {
+    <span class="text-xs text-steel">({{ count }})</span>
+  }
+</div>

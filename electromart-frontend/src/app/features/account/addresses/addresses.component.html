@@ -1,0 +1,68 @@
+<div class="site-container py-10 max-w-2xl">
+  <div class="flex items-center justify-between mb-8">
+    <h1 class="font-display text-2xl sm:text-3xl font-bold text-ink">My Addresses</h1>
+    @if (!showForm()) {
+      <button type="button" (click)="openAddForm()" class="btn-primary !py-2 !px-4 !text-sm">+ Add Address</button>
+    }
+  </div>
+
+  @if (showForm()) {
+    <form [formGroup]="form" (ngSubmit)="save()" class="card p-6 mb-6 space-y-3">
+      <h2 class="font-display font-semibold text-ink mb-2">{{ editingId() ? 'Edit Address' : 'New Address' }}</h2>
+      <div class="grid sm:grid-cols-2 gap-3">
+        <input formControlName="fullName" placeholder="Full Name" class="input-field" />
+        <input formControlName="phone" placeholder="Phone Number" class="input-field" />
+      </div>
+      <input formControlName="addressLine1" placeholder="Address Line 1" class="input-field" />
+      <input formControlName="addressLine2" placeholder="Address Line 2 (optional)" class="input-field" />
+      <div class="grid sm:grid-cols-3 gap-3">
+        <input formControlName="city" placeholder="City" class="input-field" />
+        <input formControlName="state" placeholder="State" class="input-field" />
+        <input formControlName="pincode" placeholder="Pincode" class="input-field" />
+      </div>
+      <select formControlName="addressType" class="input-field">
+        <option value="HOME">Home</option>
+        <option value="WORK">Work</option>
+        <option value="OTHER">Other</option>
+      </select>
+      <label class="flex items-center gap-2 text-sm text-ink/80">
+        <input type="checkbox" formControlName="isDefault" class="rounded border-steel/40 text-copper focus:ring-copper" />
+        Set as default address
+      </label>
+      <div class="flex gap-3 pt-2">
+        <button type="submit" class="btn-primary !py-2 !text-sm">Save Address</button>
+        <button type="button" (click)="showForm.set(false)" class="btn-outline !py-2 !text-sm">Cancel</button>
+      </div>
+    </form>
+  }
+
+  @if (loading()) {
+    <p class="text-steel text-sm">Loading addresses...</p>
+  } @else if (addresses().length === 0 && !showForm()) {
+    <p class="text-steel text-sm">You haven't saved any addresses yet.</p>
+  } @else {
+    <div class="space-y-3">
+      @for (addr of addresses(); track addr.id) {
+        <div class="card p-5 flex justify-between items-start gap-4">
+          <div class="text-sm">
+            <p class="font-medium text-ink">
+              {{ addr.fullName }} <span class="text-steel font-normal">· {{ addr.phone }}</span>
+              @if (addr.isDefault) {
+                <span class="inline-block text-[10px] font-semibold text-teal bg-teal/10 px-2 py-0.5 rounded ml-2">Default</span>
+              }
+            </p>
+            <p class="text-steel mt-1">
+              {{ addr.addressLine1 }}{{ addr.addressLine2 ? ', ' + addr.addressLine2 : '' }},
+              {{ addr.city }}, {{ addr.state }} - {{ addr.pincode }}
+            </p>
+            <p class="text-xs text-steel/70 mt-1 uppercase tracking-wide">{{ addr.addressType }}</p>
+          </div>
+          <div class="flex gap-3 shrink-0">
+            <button type="button" (click)="openEditForm(addr)" class="text-xs text-copper hover:text-copper-dark font-medium">Edit</button>
+            <button type="button" (click)="deleteAddress(addr.id)" class="text-xs text-steel hover:text-red-600 font-medium">Delete</button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

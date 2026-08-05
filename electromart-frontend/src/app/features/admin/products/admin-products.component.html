@@ -1,0 +1,192 @@
+<div class="p-6 sm:p-8">
+  <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
+    <h1 class="font-display text-2xl font-bold text-ink">Products</h1>
+    <div class="flex gap-3">
+      <label class="btn-outline !py-2 !px-4 !text-sm cursor-pointer">
+        {{ bulkUploading() ? 'Uploading...' : 'Bulk Upload CSV' }}
+        <input type="file" accept=".csv" class="hidden" (change)="onBulkUpload($event)" [disabled]="bulkUploading()" />
+      </label>
+      @if (!showForm()) {
+        <button type="button" (click)="openAddForm()" class="btn-primary !py-2 !px-4 !text-sm">+ Add Product</button>
+      }
+    </div>
+  </div>
+
+  @if (bulkResult()) {
+    <div class="card p-4 mb-6 text-sm">
+      <p class="font-medium text-ink mb-1">
+        Bulk upload: {{ bulkResult()!.successCount }} succeeded, {{ bulkResult()!.failureCount }} failed out of {{ bulkResult()!.totalRows }} rows.
+      </p>
+      @if (bulkResult()!.errors.length > 0) {
+        <ul class="text-red-600 text-xs mt-2 space-y-1 max-h-32 overflow-y-auto">
+          @for (err of bulkResult()!.errors; track err) {
+            <li>{{ err }}</li>
+          }
+        </ul>
+      }
+    </div>
+  }
+
+  @if (showForm()) {
+    <form [formGroup]="form" (ngSubmit)="save()" class="card p-6 mb-6 space-y-4">
+      <div class="flex items-center justify-between">
+        <h2 class="font-display font-semibold text-ink">{{ editingProduct() ? 'Edit Product' : 'New Product' }}</h2>
+        <button type="button" (click)="closeForm()" class="text-steel hover:text-ink text-sm">✕ Close</button>
+      </div>
+
+      <div class="grid sm:grid-cols-2 gap-3">
+        <div>
+          <label class="label-text">Product Name</label>
+          <input formControlName="name" class="input-field" />
+        </div>
+        <div>
+          <label class="label-text">SKU</label>
+          <input formControlName="sku" class="input-field" />
+        </div>
+      </div>
+
+      <div>
+        <label class="label-text">Description</label>
+        <textarea formControlName="description" rows="3" class="input-field"></textarea>
+      </div>
+
+      <div class="grid sm:grid-cols-3 gap-3">
+        <div>
+          <label class="label-text">Price (₹)</label>
+          <input type="number" formControlName="price" class="input-field" />
+        </div>
+        <div>
+          <label class="label-text">Discount Price (₹)</label>
+          <input type="number" formControlName="discountPrice" class="input-field" />
+        </div>
+        <div>
+          <label class="label-text">Stock Quantity</label>
+          <input type="number" formControlName="stockQuantity" class="input-field" />
+        </div>
+      </div>
+
+      <div class="grid sm:grid-cols-3 gap-3">
+        <div>
+          <label class="label-text">Category</label>
+          <select formControlName="categoryId" class="input-field">
+            <option [value]="0">Select category</option>
+            @for (cat of categories(); track cat.id) {
+              <option [value]="cat.id">{{ cat.name }}</option>
+            }
+          </select>
+        </div>
+        <div>
+          <label class="label-text">Brand (optional)</label>
+          <select formControlName="brandId" class="input-field">
+            <option [value]="0">No brand</option>
+            @for (brand of brands(); track brand.id) {
+              <option [value]="brand.id">{{ brand.name }}</option>
+            }
+          </select>
+        </div>
+        <div>
+          <label class="label-text">Warranty</label>
+          <input formControlName="warranty" placeholder="e.g. 1 Year" class="input-field" />
+        </div>
+      </div>
+
+      <label class="flex items-center gap-2 text-sm text-ink/80">
+        <input type="checkbox" formControlName="featured" class="rounded border-steel/40 text-copper focus:ring-copper" />
+        Feature this product on the homepage
+      </label>
+
+      <!-- Attributes -->
+      <div>
+        <div class="flex items-center justify-between mb-2">
+          <label class="label-text !mb-0">Specifications (shown on rating plate)</label>
+          <button type="button" (click)="addAttributeRow()" class="text-xs text-copper font-medium">+ Add Spec</button>
+        </div>
+        <div class="space-y-2">
+          @for (row of attributeRows(); track $index) {
+            <div class="flex gap-2">
+              <input [(ngModel)]="row.attributeKey" [ngModelOptions]="{standalone: true}" placeholder="e.g. Voltage" class="input-field !py-1.5 !text-sm" />
+              <input [(ngModel)]="row.attributeValue" [ngModelOptions]="{standalone: true}" placeholder="e.g. 220V" class="input-field !py-1.5 !text-sm" />
+              <button type="button" (click)="removeAttributeRow($index)" class="text-steel hover:text-red-600 px-2">✕</button>
+            </div>
+          }
+        </div>
+      </div>
+
+      <button type="submit" class="btn-primary">{{ editingProduct() ? 'Update Product' : 'Create Product' }}</button>
+
+      <!-- Images (only once product exists) -->
+      @if (editingProduct()) {
+        <div class="border-t border-steel/10 pt-4">
+          <label class="label-text">Product Images</label>
+          <div class="flex flex-wrap gap-3 mb-3">
+            @for (img of editingProduct()!.images; track img.id) {
+              <div class="relative w-20 h-20 rounded border border-steel/20 overflow-hidden">
+                <img [src]="img.imageUrl" [alt]="editingProduct()!.name" class="w-full h-full object-contain p-1" />
+                @if (img.primary) {
+                  <span class="absolute top-0 left-0 bg-amber text-ink text-[9px] font-bold px-1">Primary</span>
+                }
+                <button type="button" (click)="deleteImage(img.id)" class="absolute top-0 right-0 bg-red-600 text-white text-[10px] w-4 h-4 flex items-center justify-center">✕</button>
+              </div>
+            }
+          </div>
+          <div class="flex gap-3">
+            <label class="btn-outline !py-1.5 !px-3 !text-xs cursor-pointer">
+              {{ uploadingImage() ? 'Uploading...' : '+ Add Image' }}
+              <input type="file" accept="image/*" class="hidden" (change)="onImageSelected($event, false)" [disabled]="uploadingImage()" />
+            </label>
+            <label class="btn-outline !py-1.5 !px-3 !text-xs cursor-pointer">
+              + Add as Primary
+              <input type="file" accept="image/*" class="hidden" (change)="onImageSelected($event, true)" [disabled]="uploadingImage()" />
+            </label>
+          </div>
+        </div>
+      }
+    </form>
+  }
+
+  @if (loading()) {
+    <p class="text-steel text-sm">Loading products...</p>
+  } @else {
+    <div class="card overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead class="bg-porcelain text-left text-xs text-steel uppercase tracking-wide">
+          <tr>
+            <th class="px-4 py-3">Product</th>
+            <th class="px-4 py-3">SKU</th>
+            <th class="px-4 py-3">Price</th>
+            <th class="px-4 py-3">Stock</th>
+            <th class="px-4 py-3">Status</th>
+            <th class="px-4 py-3"></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (product of products(); track product.id) {
+            <tr class="border-t border-steel/10">
+              <td class="px-4 py-3 font-medium text-ink max-w-xs truncate">{{ product.name }}</td>
+              <td class="px-4 py-3 font-mono text-xs text-steel">{{ product.sku }}</td>
+              <td class="px-4 py-3 font-mono">₹{{ product.effectivePrice | number }}</td>
+              <td class="px-4 py-3">{{ product.stockQuantity }}</td>
+              <td class="px-4 py-3">
+                <span class="text-[11px] font-semibold px-2 py-0.5 rounded" [class.bg-teal/10]="product.active" [class.text-teal]="product.active" [class.bg-steel/10]="!product.active" [class.text-steel]="!product.active">
+                  {{ product.active ? 'Active' : 'Inactive' }}
+                </span>
+              </td>
+              <td class="px-4 py-3 text-right space-x-3">
+                <button type="button" (click)="openEditForm(product)" class="text-copper hover:text-copper-dark text-xs font-medium">Edit</button>
+                <button type="button" (click)="deleteProduct(product.id)" class="text-steel hover:text-red-600 text-xs font-medium">Deactivate</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    @if (totalPages() > 1) {
+      <div class="flex items-center justify-center gap-2 mt-6">
+        <button type="button" (click)="goToPage(page() - 1)" [disabled]="page() === 0" class="btn-outline !py-2 !px-4 !text-sm">Previous</button>
+        <span class="text-sm text-steel px-3">Page {{ page() + 1 }} of {{ totalPages() }}</span>
+        <button type="button" (click)="goToPage(page() + 1)" [disabled]="page() + 1 >= totalPages()" class="btn-outline !py-2 !px-4 !text-sm">Next</button>
+      </div>
+    }
+  }
+</div>

@@ -1,0 +1,42 @@
+<div class="site-container py-16 max-w-md mx-auto">
+  <div class="text-center mb-8">
+    <span class="w-2.5 h-2.5 rounded-full bg-amber inline-block mb-3"></span>
+    <h1 class="font-display text-2xl font-bold text-ink">Welcome back</h1>
+    <p class="text-steel text-sm mt-1">Log in to continue to ElectroMart</p>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="submit()" class="card p-6 sm:p-8 space-y-4">
+    @if (errorMessage()) {
+      <div class="bg-red-50 text-red-700 text-sm rounded px-4 py-3">{{ errorMessage() }}</div>
+    }
+
+    <div>
+      <label class="label-text" for="email">Email</label>
+      <input id="email" type="email" formControlName="email" class="input-field" placeholder="you&#64;example.com" />
+      @if (f.email.invalid && f.email.touched) {
+        <p class="error-text">Please enter a valid email address.</p>
+      }
+    </div>
+
+    <div>
+      <label class="label-text" for="password">Password</label>
+      <input id="password" type="password" formControlName="password" class="input-field" placeholder="••••••••" />
+      @if (f.password.invalid && f.password.touched) {
+        <p class="error-text">Password is required.</p>
+      }
+    </div>
+
+    <div class="flex justify-end">
+      <a routerLink="/auth/forgot-password" class="text-xs text-copper hover:text-copper-dark font-medium">Forgot password?</a>
+    </div>
+
+    <button type="submit" [disabled]="loading()" class="btn-primary w-full">
+      {{ loading() ? 'Logging in...' : 'Log In' }}
+    </button>
+
+    <p class="text-center text-sm text-steel">
+      New here?
+      <a routerLink="/auth/register" class="text-copper font-semibold hover:text-copper-dark">Create an account</a>
+    </p>
+  </form>
+</div>
